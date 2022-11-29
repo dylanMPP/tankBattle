@@ -1,9 +1,8 @@
 package com.example.tankbattle.control;
 
+import com.example.tankbattle.TankBattleApplication;
 import com.example.tankbattle.model.Avatar;
-import com.example.tankbattle.model.Bullet;
-import com.example.tankbattle.model.Enemy;
-import com.example.tankbattle.model.Vector;
+import com.example.tankbattle.model.Obstacle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
@@ -14,27 +13,34 @@ import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 import javafx.application.Platform;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Shape;
 
 public class MapController implements Initializable {
 
     //Variables globales de la ventana
     @FXML
-    private Canvas mapCanvas;
+    public Canvas mapCanvas;
+
+    @FXML
+    public ImageView background;
     private GraphicsContext gc;
     private boolean isRunning = true;
 
 
     //Elementos gráficos
     private Avatar avatar;
+    private Avatar avatar2;
 
-    private ArrayList<Enemy> enemies;
-    private ArrayList<Bullet> bullets;
+    private ArrayList<Obstacle> enemies;
+    private ArrayList<Shape> shapes;
 
 
     //Estados de las teclas
+    // Avatar 1
     boolean Wpressed = false;
     boolean Apressed = false;
     boolean Spressed = false;
@@ -42,24 +48,46 @@ public class MapController implements Initializable {
 
     boolean spacePressed = false;
 
+    // Avatar 2
+    boolean UpPressed = false;
+    boolean DownPressed = false;
+    boolean LefPressed = false;
+    boolean RightPressed = false;
+
+    boolean PPressed = false;
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         gc = mapCanvas.getGraphicsContext2D();
-        mapCanvas.setFocusTraversable(true);
+        String uri = "file:" + TankBattleApplication.class.getResource("redTank.png").getPath();
+        background = new ImageView(uri);
 
+        mapCanvas.setFocusTraversable(true);
         mapCanvas.setOnKeyPressed(this::onKeyPressed);
         mapCanvas.setOnKeyReleased(this::onKeyReleased);
+
         enemies = new ArrayList<>();
-        bullets = new ArrayList<>();
-        enemies.add(new Enemy(mapCanvas,300,100));
-        enemies.add(new Enemy(mapCanvas,300,300));
+        shapes = new ArrayList<>();
+
+        enemies.add(new Obstacle(mapCanvas,300,100));
+        enemies.add(new Obstacle(mapCanvas,300,300));
+
         avatar = new Avatar(mapCanvas);
+        avatar2 = new Avatar(mapCanvas);
 
         draw();
     }
 
     public void draw() {
+        // Añado los enemies u obstáculos al arreglo de shapes del mapa
+        // Este arreglo de shapes del mapa me sirve para enviarlo como parámetro al verificar
+        // colisiones para cada obstáculo con el fin de que desaparezca
+        for (int i = 0; i < enemies.size(); i++) {
+            Shape rectangle1 = enemies.get(i).rectangle;
+            shapes.add(rectangle1);
+        }
+
         new Thread(
                 () -> {
                     while (isRunning) {
@@ -67,23 +95,13 @@ public class MapController implements Initializable {
                             gc.setFill(Color.BLACK);
                             gc.fillRect(0, 0, mapCanvas.getWidth(), mapCanvas.getHeight());
                             avatar.draw();
+                            avatar2.draw();
                             //Pintar enemigos
                             for (int i = 0; i < enemies.size(); i++) {
                                 enemies.get(i).draw();
                             }
-                            for (int i = 0; i < bullets.size(); i++) {
-                                // dibujo las balas con el .draw y verifico que no se salió de la pantalla
-                                bullets.get(i).draw();
-                                if(bullets.get(i).pos.x > mapCanvas.getWidth()+20 ||
-                                        bullets.get(i).pos.y > mapCanvas.getHeight()+20 ||
-                                        bullets.get(i).pos.y < -20 ||
-                                        bullets.get(i).pos.x < -20
-                                ){
-                                    bullets.remove(i);
-                                }
-
-                            }
-
+                            avatar.bulletThread();
+                            avatar2.bulletThread();
                             //Colisiones
                             detectCollisions();
                             doKeyboardActions();
@@ -101,22 +119,8 @@ public class MapController implements Initializable {
     }
 
     private void detectCollisions() {
-        for (int i = 0; i < enemies.size(); i++) {
-            for (int j = 0; j < bullets.size(); j++) {
-                Bullet b = bullets.get(j);
-                Enemy e = enemies.get(i);
-                double cateto1 = b.pos.x - e.x;
-                double cateto2 = b.pos.y - e.y;
-                double distance = Math.sqrt(Math.pow(cateto1,2)+Math.pow(cateto2,2));
-                // menor a 20 porque esta distancia depende del size de los tanques, ya está calculada
-                // si es menor a 20 es porque choca y debo remover al enemigo y a la bala
-                if (distance < 20){
-                    bullets.remove(j);
-                    enemies.remove(i);
-                    return;
-                }
-            }
-        }
+        this.shapes = avatar.detectCollision(shapes, enemies).getKey();
+        this.enemies = avatar2.detectCollision(shapes, enemies).getValue();
     }
 
     private void doKeyboardActions() {
@@ -134,6 +138,20 @@ public class MapController implements Initializable {
         }
         if (Dpressed) {
             avatar.changeAngle(6);
+        }
+
+        // Avatar 2
+        if (UpPressed) {
+            avatar2.moveForward();
+        }
+        if (LefPressed) {
+            avatar2.changeAngle(-6);
+        }
+        if (DownPressed) {
+            avatar2.moveBackward();
+        }
+        if (RightPressed) {
+            avatar2.changeAngle(6);
         }
     }
 
@@ -154,6 +172,24 @@ public class MapController implements Initializable {
         if (keyEvent.getCode() == KeyCode.SPACE){
             spacePressed = false;
         }
+
+        // Avatar 2
+        if (keyEvent.getCode() == KeyCode.UP) {
+            UpPressed = false;
+        }
+        if (keyEvent.getCode() == KeyCode.LEFT) {
+            LefPressed = false;
+        }
+        if (keyEvent.getCode() == KeyCode.DOWN) {
+            DownPressed = false;
+        }
+        if (keyEvent.getCode() == KeyCode.RIGHT) {
+            RightPressed = false;
+        }
+
+        if (keyEvent.getCode() == KeyCode.P){
+            PPressed = false;
+        }
     }
 
     private void onKeyPressed(KeyEvent keyEvent) {
@@ -172,8 +208,25 @@ public class MapController implements Initializable {
         }
 
         if(keyEvent.getCode() == KeyCode.SPACE){
-            Bullet bullet = new Bullet(mapCanvas,new Vector(avatar.pos.x,avatar.pos.y) ,new Vector(avatar.direction.x,avatar.direction.y));
-            bullets.add(bullet);
+            avatar.addBullet();
+        }
+
+        // Avatar 2
+        if (keyEvent.getCode() == KeyCode.UP) {
+            UpPressed = true;
+        }
+        if (keyEvent.getCode() == KeyCode.LEFT) {
+            LefPressed = true;
+        }
+        if (keyEvent.getCode() == KeyCode.DOWN) {
+            DownPressed = true;
+        }
+        if (keyEvent.getCode() == KeyCode.RIGHT) {
+            RightPressed = true;
+        }
+
+        if(keyEvent.getCode() == KeyCode.P){
+            avatar2.addBullet();
         }
     }
 }

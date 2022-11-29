@@ -4,20 +4,22 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
 
-public class Enemy {
+public class Obstacle {
 
     private Canvas canvas;
     private GraphicsContext gc;
     public int x,y;
-    public Rectangle rectangle;
+    public Shape rectangle;
 
-    public Enemy(Canvas canvas, int x, int y){
+    public Obstacle(Canvas canvas, int x, int y){
         this.canvas = canvas;
         gc = canvas.getGraphicsContext2D();
         this.x = x;
         this.y = y;
-        rectangle = new Rectangle(this.x, this.y, 50,50);
+        // Creo el rectangulo en la misma posición y con el mismo size que el rectangulo que pinto de cada objeto
+        rectangle = new Rectangle(this.x-12.5, this.y-12.5, 25,25);
     }
 
     public void draw(){
