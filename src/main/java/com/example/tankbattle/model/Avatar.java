@@ -42,7 +42,7 @@ public class Avatar {
         // Es el canvas quien se gira y se mueve, no el tanque.
         // Lo trasladamos para que el tanque se traslade de posición
         gc.translate(pos.x, pos.y);
-        rectangle = new Rectangle(pos.x-30, pos.y-30, 50,50);
+        rectangle = new Rectangle(pos.x-25, pos.y-25, 50,50);
         // 90 para que el canvas gire bien
         gc.rotate(90 + direction.getAngle());
         gc.drawImage(tank, -25, -25, 50, 50);
@@ -93,6 +93,7 @@ public class Avatar {
                         bullets.get(i).pos.y < -20 ||
                         bullets.get(i).pos.x < -20
                 ) {
+                    System.out.println("removed");
                     bullets.remove(i);
                 }
             }
@@ -130,7 +131,6 @@ public class Avatar {
             for (int i = 0; i < avatarShapes.size(); i++) {
                 for (int j = 0; j < bulletsShapes.size(); j++) {
                     // verifico que no sea él mismo
-                    System.out.println("entra");
                     if(i!=avatarPos){
                         if(bulletsShapes.get(j).intersects(avatarShapes.get(i).getBoundsInParent())){
                             System.out.println(avatarShapes.size());

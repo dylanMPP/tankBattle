@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 import javafx.application.Platform;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -58,13 +59,15 @@ public class MapController implements Initializable {
     boolean RightPressed = false;
 
     boolean PPressed = false;
+    Image backgroundImage;
+
 
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         gc = mapCanvas.getGraphicsContext2D();
-        String uri = "file:" + TankBattleApplication.class.getResource("redTank.png");
-        background = new ImageView(uri);
+        String uri = "file:" + TankBattleApplication.class.getResource("map-snow.png").getPath();
+        backgroundImage = new Image(uri);
 
         mapCanvas.setFocusTraversable(true);
         mapCanvas.setOnKeyPressed(this::onKeyPressed);
@@ -75,8 +78,7 @@ public class MapController implements Initializable {
         obstaclesShapes = new ArrayList<>();
         avatarShapes = new ArrayList<>();
 
-        obstacles.add(new Obstacle(mapCanvas,300,100));
-        obstacles.add(new Obstacle(mapCanvas,300,300));
+        createMap();
 
         avatar = new Avatar(mapCanvas);
         avatar2 = new Avatar(mapCanvas);
@@ -110,8 +112,7 @@ public class MapController implements Initializable {
                         }
 
                         Platform.runLater(() -> {
-                            gc.setFill(Color.BLACK);
-                            gc.fillRect(0, 0, mapCanvas.getWidth(), mapCanvas.getHeight());
+                            gc.drawImage(backgroundImage,0,0,mapCanvas.getWidth(), mapCanvas.getHeight());
 
                             // dependiendo de los avatars que hayan los dibujo
                             // estos se actualizan en la collision de avatars, van disminuyendo
@@ -124,6 +125,7 @@ public class MapController implements Initializable {
                             for (int i = 0; i < obstacles.size(); i++) {
                                 obstacles.get(i).draw();
                             }
+                            
                             avatar.bulletThread();
                             avatar2.bulletThread();
                             //Colisiones
@@ -287,5 +289,10 @@ public class MapController implements Initializable {
         if(keyEvent.getCode() == KeyCode.P){
             avatar2.addBullet();
         }
+    }
+
+    public void createMap(){
+        obstacles.add(new Obstacle(mapCanvas, "file:" + TankBattleApplication.class.getResource("ice-block.png").getPath(),300,100));
+        obstacles.add(new Obstacle(mapCanvas, "file:" + TankBattleApplication.class.getResource("ice-block.png").getPath(),300,200));
     }
 }
