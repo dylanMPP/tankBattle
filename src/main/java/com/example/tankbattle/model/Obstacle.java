@@ -22,10 +22,10 @@ public class Obstacle {
         this.x = x;
         this.y = y;
         // Creo el rectangulo en la misma posición y con el mismo size que el rectangulo que pinto de cada objeto
-        rectangle = new Rectangle(this.x-12.5, this.y-12.5, 25,25);
+        rectangle = new Rectangle(this.x-20, this.y-20, 40,40);
     }
 
     public void draw(){
-        gc.drawImage(image, x, y, 25, 25);
+        gc.drawImage(image, x-20, y-20, 40, 40);
     }
 }

@@ -18,6 +18,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.util.Pair;
 
@@ -60,6 +61,7 @@ public class MapController implements Initializable {
 
     boolean PPressed = false;
     Image backgroundImage;
+    boolean canMove;
 
 
 
@@ -68,6 +70,7 @@ public class MapController implements Initializable {
         gc = mapCanvas.getGraphicsContext2D();
         String uri = "file:" + TankBattleApplication.class.getResource("map-snow.png").getPath();
         backgroundImage = new Image(uri);
+        canMove = true;
 
         mapCanvas.setFocusTraversable(true);
         mapCanvas.setOnKeyPressed(this::onKeyPressed);
@@ -129,10 +132,13 @@ public class MapController implements Initializable {
                             avatar.bulletThread();
                             avatar2.bulletThread();
                             //Colisiones
+                            detectObstacleCollisions();
                             detectCollisions();
                             detectAvatarCollisions();
-                            doKeyboardActions();
 
+                            if(detectObstacleCollisions()){
+                                doKeyboardActions();
+                            }
                         });
                         //Sleep
                         try {
@@ -144,6 +150,20 @@ public class MapController implements Initializable {
                 }
         ).start();
     }
+
+    public boolean detectObstacleCollisions(){
+        for (int i = 0; i < avatars.size(); i++) {
+            for (int j = 0; j < obstaclesShapes.size(); j++) {
+                Shape shape = new Rectangle(avatars.get(i).pos.x + avatars.get(i).direction.x,avatars.get(i).pos.y + avatars.get(i).direction.y);
+
+                if(obstaclesShapes.get(j).intersects(shape.getBoundsInParent())){
+                    System.out.println("retorno falso");
+                    return false;
+                }
+            } // for
+        } // for
+        return true;
+    } // detect
 
     private void detectCollisions() {
         Pair<ArrayList<Shape>, ArrayList<Obstacle>> pair = avatar.detectCollision(obstaclesShapes, obstacles);
@@ -189,6 +209,7 @@ public class MapController implements Initializable {
         // usando el método changeAngle del avatar o del enemigo, le sumo o le resto
         // el ángulo que yo desee, en este caso 6, para que no gire tanto
         if (Wpressed) {
+
             avatar.moveForward();
         }
         if (Apressed) {
@@ -291,7 +312,21 @@ public class MapController implements Initializable {
     }
 
     public void createMap(){
-        obstacles.add(new Obstacle(mapCanvas, "file:" + TankBattleApplication.class.getResource("ice-block.png").getPath(),300,100));
-        obstacles.add(new Obstacle(mapCanvas, "file:" + TankBattleApplication.class.getResource("ice-block.png").getPath(),300,200));
+        String path = "file:" + TankBattleApplication.class.getResource("ice-block.png").getPath();
+        // Pinto los obstáculos. Y es la altura de cada uno, si pongo 20 (que es la mitad de su altura)
+        // entonces se me pinta arriba al borde. Para bajarlo, le a ese 20 el total de la altura
+        int height = 40;
+        obstacles.add(new Obstacle(mapCanvas, path,300,20));
+        obstacles.add(new Obstacle(mapCanvas, path,300,(20+height)));
+        obstacles.add(new Obstacle(mapCanvas, path,300,(20+height*2)));
+        obstacles.add(new Obstacle(mapCanvas, path,300,(20+height*3)));
+
+        obstacles.add(new Obstacle(mapCanvas, path,500,(200+height)));
+        obstacles.add(new Obstacle(mapCanvas, path,500,(280+height)));
+        obstacles.add(new Obstacle(mapCanvas, path,500,(320+height)));
+
+        obstacles.add(new Obstacle(mapCanvas, path,400,((int) mapCanvas.getHeight()-20)));
+        obstacles.add(new Obstacle(mapCanvas, path,400,((int) mapCanvas.getHeight()-60)));
+        obstacles.add(new Obstacle(mapCanvas, path,400,((int) mapCanvas.getHeight()-100)));
     }
 }

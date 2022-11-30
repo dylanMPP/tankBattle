@@ -31,8 +31,8 @@ public class Bullet {
         // Sumo los dos vectores, es como si fuesen paralelos, entonces inicio desde la posición
         // y a ese vector le voy sumando cada que dibujo la dirección, para que se vaya extendiendo
         // la bala
-        pos.x += direction.x;
-        pos.y += direction.y;
+        pos.x += (direction.x*3.5);
+        pos.y += (direction.y*3.5);
         // Retorno un circulo para ir actualizando las balas en el array list en la controller
         // pues necesito su posición cuando se está pintando
         return new Circle(xAux, yAux, 5);

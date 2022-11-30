@@ -24,7 +24,7 @@ public class Avatar {
     public ArrayList<Bullet> bullets;
     public ArrayList<Shape> bulletsShapes;
 
-    public Avatar(Canvas avatarCanvas) {
+    public Avatar(Canvas avatarCanvas ) {
         bullets = new ArrayList<>();
         bulletsShapes = new ArrayList<>();
         this.canvas = avatarCanvas;
@@ -133,8 +133,6 @@ public class Avatar {
                     // verifico que no sea él mismo
                     if(i!=avatarPos){
                         if(bulletsShapes.get(j).intersects(avatarShapes.get(i).getBoundsInParent())){
-                            System.out.println(avatarShapes.size());
-                            System.out.println("intersects con");
                             bullets.remove(j);
                             bulletsShapes.remove(j);
                             avatarShapes.remove(i);
