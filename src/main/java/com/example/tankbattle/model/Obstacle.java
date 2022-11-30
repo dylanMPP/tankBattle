@@ -26,6 +26,6 @@ public class Obstacle {
     }
 
     public void draw(){
-        gc.drawImage(image,0,0, canvas.getWidth(), canvas.getHeight());
+        gc.drawImage(image, x, y, 25, 25);
     }
 }

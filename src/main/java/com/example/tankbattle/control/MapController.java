@@ -125,7 +125,7 @@ public class MapController implements Initializable {
                             for (int i = 0; i < obstacles.size(); i++) {
                                 obstacles.get(i).draw();
                             }
-                            
+
                             avatar.bulletThread();
                             avatar2.bulletThread();
                             //Colisiones
@@ -254,7 +254,6 @@ public class MapController implements Initializable {
     }
 
     private void onKeyPressed(KeyEvent keyEvent) {
-        System.out.println(keyEvent.getCode());
         if (keyEvent.getCode() == KeyCode.W) {
             Wpressed = true;
         }
