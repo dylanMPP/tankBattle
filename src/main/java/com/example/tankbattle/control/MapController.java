@@ -18,6 +18,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
+import javafx.util.Pair;
 
 public class MapController implements Initializable {
 
@@ -35,8 +36,10 @@ public class MapController implements Initializable {
     private Avatar avatar;
     private Avatar avatar2;
 
-    private ArrayList<Obstacle> enemies;
-    private ArrayList<Shape> shapes;
+    private ArrayList<Obstacle> obstacles;
+    private ArrayList<Avatar> avatars;
+    private ArrayList<Shape> obstaclesShapes;
+    private ArrayList<Shape> avatarShapes;
 
 
     //Estados de las teclas
@@ -60,21 +63,25 @@ public class MapController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         gc = mapCanvas.getGraphicsContext2D();
-        String uri = "file:" + TankBattleApplication.class.getResource("redTank.png").getPath();
+        String uri = "file:" + TankBattleApplication.class.getResource("redTank.png");
         background = new ImageView(uri);
 
         mapCanvas.setFocusTraversable(true);
         mapCanvas.setOnKeyPressed(this::onKeyPressed);
         mapCanvas.setOnKeyReleased(this::onKeyReleased);
 
-        enemies = new ArrayList<>();
-        shapes = new ArrayList<>();
+        obstacles = new ArrayList<>();
+        avatars = new ArrayList<>();
+        obstaclesShapes = new ArrayList<>();
+        avatarShapes = new ArrayList<>();
 
-        enemies.add(new Obstacle(mapCanvas,300,100));
-        enemies.add(new Obstacle(mapCanvas,300,300));
+        obstacles.add(new Obstacle(mapCanvas,300,100));
+        obstacles.add(new Obstacle(mapCanvas,300,300));
 
         avatar = new Avatar(mapCanvas);
         avatar2 = new Avatar(mapCanvas);
+        avatars.add(avatar);
+        avatars.add(avatar2);
 
         draw();
     }
@@ -83,27 +90,45 @@ public class MapController implements Initializable {
         // Añado los enemies u obstáculos al arreglo de shapes del mapa
         // Este arreglo de shapes del mapa me sirve para enviarlo como parámetro al verificar
         // colisiones para cada obstáculo con el fin de que desaparezca
-        for (int i = 0; i < enemies.size(); i++) {
-            Shape rectangle1 = enemies.get(i).rectangle;
-            shapes.add(rectangle1);
+        for (int i = 0; i < obstacles.size(); i++) {
+            Shape rectangle1 = obstacles.get(i).rectangle;
+            obstaclesShapes.add(rectangle1);
         }
+
+        // Añado los rectangulos (hitbox) de cada avatar al array list de shapes
+        // de la controladora, para más adelante verificar si estos son tocados por alguna bala
 
         new Thread(
                 () -> {
                     while (isRunning) {
+                        // dentro del for constantemente voy a estar actualizando los shapes del avatar
+                        // pues las coordenadas del shape (rectángulo) constantemente también se está
+                        // actualizando porque el tanque se mueve
+                        avatarShapes.clear();
+                        for (int i = 0; i < avatars.size(); i++) {
+                            avatarShapes.add(avatars.get(i).rectangle);
+                        }
+
                         Platform.runLater(() -> {
                             gc.setFill(Color.BLACK);
                             gc.fillRect(0, 0, mapCanvas.getWidth(), mapCanvas.getHeight());
-                            avatar.draw();
-                            avatar2.draw();
+
+                            // dependiendo de los avatars que hayan los dibujo
+                            // estos se actualizan en la collision de avatars, van disminuyendo
+                            // si ya fueron intersectados por una bullet
+                            for (Avatar avatar : avatars) {
+                                avatar.draw();
+                            }
+
                             //Pintar enemigos
-                            for (int i = 0; i < enemies.size(); i++) {
-                                enemies.get(i).draw();
+                            for (int i = 0; i < obstacles.size(); i++) {
+                                obstacles.get(i).draw();
                             }
                             avatar.bulletThread();
                             avatar2.bulletThread();
                             //Colisiones
                             detectCollisions();
+                            detectAvatarCollisions();
                             doKeyboardActions();
 
                         });
@@ -119,8 +144,42 @@ public class MapController implements Initializable {
     }
 
     private void detectCollisions() {
-        this.shapes = avatar.detectCollision(shapes, enemies).getKey();
-        this.enemies = avatar2.detectCollision(shapes, enemies).getValue();
+        Pair<ArrayList<Shape>, ArrayList<Obstacle>> pair = avatar.detectCollision(obstaclesShapes, obstacles);
+        this.obstaclesShapes = pair.getKey();
+        this.obstacles = pair.getValue();
+
+        Pair<ArrayList<Shape>, ArrayList<Obstacle>> pair2 = avatar2.detectCollision(obstaclesShapes, obstacles);
+        this.obstaclesShapes = pair2.getKey();
+        this.obstacles = pair2.getValue();
+    }
+
+    private void detectAvatarCollisions(){
+        // mando la posición (si encuentra) del objeto avatar, para que solo evalue los demás avatares aparte de él
+        // pues no quiero que por su propia bala sea eliminado. Si no encuentra, manda -1
+        int avatarPos = -1;
+
+        for (int i = 0; i < avatars.size(); i++) {
+            if(avatars.get(i).equals(avatar)){
+                avatarPos = i;
+                break;
+            }
+        }
+
+        // Guardo el resultado de detect collisions en una variable pair, donde tengo los shapes y los avatares
+        Pair<ArrayList<Shape>, ArrayList<Avatar>> pair = avatar.detectAvatarCollisions(avatarShapes, avatars, avatarPos);
+        this.avatarShapes = pair.getKey();
+        this.avatars = pair.getValue();
+
+        for (int i = 0; i < avatars.size(); i++) {
+            if(avatars.get(i).equals(avatar2)){
+                avatarPos = i;
+                break;
+            }
+        }
+
+        Pair<ArrayList<Shape>, ArrayList<Avatar>> pair2 = avatar2.detectAvatarCollisions(avatarShapes, avatars, avatarPos);
+        this.avatarShapes = pair2.getKey();
+        this.avatars = pair2.getValue();
     }
 
     private void doKeyboardActions() {

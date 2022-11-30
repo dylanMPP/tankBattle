@@ -27,12 +27,14 @@ public class Bullet {
         double xAux = pos.x-2;
         double yAux = pos.y-2;
         gc.setFill(Color.BLUE);
-        gc.fillOval(pos.x-2, pos.y-2,10,10);
+        gc.fillOval(pos.x, pos.y,10,10);
         // Sumo los dos vectores, es como si fuesen paralelos, entonces inicio desde la posición
         // y a ese vector le voy sumando cada que dibujo la dirección, para que se vaya extendiendo
         // la bala
         pos.x += direction.x;
         pos.y += direction.y;
+        // Retorno un circulo para ir actualizando las balas en el array list en la controller
+        // pues necesito su posición cuando se está pintando
         return new Circle(xAux, yAux, 5);
     }
 }

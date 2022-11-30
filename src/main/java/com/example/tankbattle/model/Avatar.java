@@ -42,6 +42,7 @@ public class Avatar {
         // Es el canvas quien se gira y se mueve, no el tanque.
         // Lo trasladamos para que el tanque se traslade de posición
         gc.translate(pos.x, pos.y);
+        rectangle = new Rectangle(pos.x-30, pos.y-30, 50,50);
         // 90 para que el canvas gire bien
         gc.rotate(90 + direction.getAngle());
         gc.drawImage(tank, -25, -25, 50, 50);
@@ -83,6 +84,9 @@ public class Avatar {
         new Thread(() -> {
             for (int i = 0; i < bullets.size(); i++) {
                 // dibujo las balas con el .draw y verifico que no se salió de la pantalla
+
+                // Seteo las shapes de las bullets en su posición usando el .draw, ya que me devuelve
+                // la shape en la posición hacia donde se movió
                 bulletsShapes.set(i, bullets.get(i).draw());
 
                 if (bullets.get(i).pos.x > canvas.getWidth() + 20 || bullets.get(i).pos.y > canvas.getHeight() + 20 ||
@@ -99,23 +103,51 @@ public class Avatar {
     // cada vez qe en el hilo se ejecute el detect collision y, entonces, si elimino algun sahpe porque ya chocó
     // entonces tambien se elimina de los enemies y se actualiza en el controller. Las balas están acá, asi que no
     // hay problema
-    public Pair<ArrayList<Shape>, ArrayList<Obstacle>> detectCollision(ArrayList<Shape> shapes, ArrayList<Obstacle> enemies){
+    public Pair<ArrayList<Shape>, ArrayList<Obstacle>> detectCollision(ArrayList<Shape> obstaclesShapes,
+                                                                       ArrayList<Obstacle> enemies){
         try{
-            for (int i = 0; i < shapes.size(); i++) {
+            for (int i = 0; i < obstaclesShapes.size(); i++) {
                 for (int j = 0; j < bulletsShapes.size(); j++) {
-                    if(bulletsShapes.get(j).intersects(shapes.get(i).getBoundsInParent())){
+                    if(bulletsShapes.get(j).intersects(obstaclesShapes.get(i).getBoundsInParent())){
                         bullets.remove(j);
                         bulletsShapes.remove(j);
-                        shapes.remove(i);
+                        obstaclesShapes.remove(i);
                         enemies.remove(i);
                     } // if
                 } // for
             } // for
 
-            return new Pair<>(shapes, enemies);
+            return new Pair<>(obstaclesShapes, enemies);
         } catch (IndexOutOfBoundsException indexOutOfBoundsException){
             throw new RuntimeException();
         }
     } // detect collision
+
+    public Pair<ArrayList<Shape>, ArrayList<Avatar>> detectAvatarCollisions(ArrayList<Shape> avatarShapes,
+                                                                            ArrayList<Avatar> avatars, int avatarPos){
+        try{
+            // Lo mismo de arriba pero para avatars
+            for (int i = 0; i < avatarShapes.size(); i++) {
+                for (int j = 0; j < bulletsShapes.size(); j++) {
+                    // verifico que no sea él mismo
+                    System.out.println("entra");
+                    if(i!=avatarPos){
+                        if(bulletsShapes.get(j).intersects(avatarShapes.get(i).getBoundsInParent())){
+                            System.out.println(avatarShapes.size());
+                            System.out.println("intersects con");
+                            bullets.remove(j);
+                            bulletsShapes.remove(j);
+                            avatarShapes.remove(i);
+                            avatars.remove(i);
+                        } // if
+                    }
+                } // for
+            } // for
+
+            return new Pair<>(avatarShapes, avatars);
+        } catch (IndexOutOfBoundsException indexOutOfBoundsException){
+            throw new RuntimeException();
+        }
+    }
 }
 
