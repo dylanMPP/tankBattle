@@ -1,6 +1,5 @@
 package com.example.tankbattle.model;
 
-import com.example.tankbattle.TankBattleApplication;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -23,15 +22,28 @@ public class Avatar {
     public Rectangle rectangle;
     public ArrayList<Bullet> bullets;
     public ArrayList<Shape> bulletsShapes;
+    public int lives;
+    public int ammo;
+    public String pathImage;
 
-    public Avatar(Canvas avatarCanvas ) {
+    public Avatar(Canvas avatarCanvas, String path) {
+        pathImage = path;
         bullets = new ArrayList<>();
         bulletsShapes = new ArrayList<>();
+        lives = 5;
+        ammo = 5;
         this.canvas = avatarCanvas;
         gc = canvas.getGraphicsContext2D();
-        String uri = "file:" + TankBattleApplication.class.getResource("redTank.png").getPath();
-        tank = new Image(uri);
-        pos = new Vector(50, 50);
+        tank = new Image(path);
+
+        if(pathImage.contains("red")) {
+            pos = new Vector(50, 50);
+        } else if(pathImage.contains("blue")){
+            pos = new Vector(600, ((int) canvas.getHeight() - 100));
+        } else if(pathImage.contains("yellow")){
+            pos = new Vector(60, 100);
+        }
+
         // la pos del canvas debe ser pequeña para que no gire rápido
         direction = new Vector(2, 2);
         rectangle = new Rectangle(pos.x, pos.y, 50, 50);
@@ -74,20 +86,33 @@ public class Avatar {
     }
 
     public void addBullet() {
-        Bullet bullet = new Bullet(canvas, new Vector(pos.x, pos.y), new Vector(direction.x, direction.y));
-        Shape circle = new Circle(bullet.x, bullet.y, 5);
-        bulletsShapes.add(circle);
-        bullets.add(bullet);
+        if(!(ammo-1 < 0)){
+            ammo -= 1;
+            Bullet bullet = new Bullet(canvas, new Vector(pos.x, pos.y), new Vector(direction.x, direction.y));
+            Shape circle = new Circle(bullet.x, bullet.y, 5);
+            bulletsShapes.add(circle);
+            bullets.add(bullet);
+        }
+    }
+
+    public void reload(){
+        ammo = 5;
     }
 
     public void bulletThread() {
         new Thread(() -> {
             for (int i = 0; i < bullets.size(); i++) {
+                System.out.println("bullets size:"+bullets.size());
                 // dibujo las balas con el .draw y verifico que no se salió de la pantalla
 
                 // Seteo las shapes de las bullets en su posición usando el .draw, ya que me devuelve
                 // la shape en la posición hacia donde se movió
-                bulletsShapes.set(i, bullets.get(i).draw());
+                try{
+                    bulletsShapes.set(i, bullets.get(i).draw(pathImage));
+                } catch (IndexOutOfBoundsException indexOutOfBoundsException){
+                    System.out.println("No bullets");
+                }
+
 
                 if (bullets.get(i).pos.x > canvas.getWidth() + 20 || bullets.get(i).pos.y > canvas.getHeight() + 20 ||
                         bullets.get(i).pos.y < -20 ||
@@ -105,7 +130,7 @@ public class Avatar {
     // entonces tambien se elimina de los enemies y se actualiza en el controller. Las balas están acá, asi que no
     // hay problema
     public Pair<ArrayList<Shape>, ArrayList<Obstacle>> detectCollision(ArrayList<Shape> obstaclesShapes,
-                                                                       ArrayList<Obstacle> enemies){
+                                                                       ArrayList<Obstacle> obstacles){
         try{
             for (int i = 0; i < obstaclesShapes.size(); i++) {
                 for (int j = 0; j < bulletsShapes.size(); j++) {
@@ -113,13 +138,15 @@ public class Avatar {
                         bullets.remove(j);
                         bulletsShapes.remove(j);
                         obstaclesShapes.remove(i);
-                        enemies.remove(i);
+                        obstacles.remove(i);
                     } // if
                 } // for
             } // for
 
-            return new Pair<>(obstaclesShapes, enemies);
+            return new Pair<>(obstaclesShapes, obstacles);
         } catch (IndexOutOfBoundsException indexOutOfBoundsException){
+            throw new RuntimeException();
+        } catch (RuntimeException runtimeException){
             throw new RuntimeException();
         }
     } // detect collision
@@ -135,8 +162,13 @@ public class Avatar {
                         if(bulletsShapes.get(j).intersects(avatarShapes.get(i).getBoundsInParent())){
                             bullets.remove(j);
                             bulletsShapes.remove(j);
-                            avatarShapes.remove(i);
-                            avatars.remove(i);
+
+                            avatars.get(i).lives -= 1;
+
+                            if(avatars.get(i).lives ==0){
+                                avatarShapes.remove(i);
+                                avatars.remove(i);
+                            }
                         } // if
                     }
                 } // for
@@ -144,6 +176,8 @@ public class Avatar {
 
             return new Pair<>(avatarShapes, avatars);
         } catch (IndexOutOfBoundsException indexOutOfBoundsException){
+            throw new RuntimeException();
+        } catch (RuntimeException runtimeException){
             throw new RuntimeException();
         }
     }

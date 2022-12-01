@@ -1,13 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.canvas.*?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.tankbattle.control.MapController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.tankbattle.control.MapController">
    <children>
-      <Canvas fx:id="avatarCanvas" height="720.0" width="1280.0" />
-      <Canvas fx:id="mapCanvas" height="720.0" width="1280.0" />
-      <ImageView fx:id="background" fitHeight="720.0" fitWidth="1280.0" pickOnBounds="true" preserveRatio="true" />
+      <AnchorPane prefHeight="200.0" prefWidth="200.0" />
+      <Canvas fx:id="mapCanvas" height="540.0" layoutY="130.0" width="960.0" />
+      <ImageView fx:id="background" fitHeight="540.0" fitWidth="960.0" layoutY="130.0" pickOnBounds="true" preserveRatio="true" />
+      <AnchorPane layoutY="670.0" prefHeight="130.0" prefWidth="480.0">
+         <children>
+            <Label layoutX="190.0" layoutY="5.0" text="PLAYER ONE">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <ImageView fx:id="playerOneLivesImageView" fitHeight="40.0" fitWidth="200.0" layoutX="140.0" layoutY="32.0" pickOnBounds="true" preserveRatio="true" />
+            <ImageView fx:id="playerOneBulletsImageView" fitHeight="40.0" fitWidth="140.0" layoutX="180.0" layoutY="75.0" pickOnBounds="true" preserveRatio="true" />
+         </children></AnchorPane>
+      <AnchorPane layoutX="480.0" prefHeight="130.0" prefWidth="480.0" />
+      <AnchorPane layoutX="480.0" layoutY="670.0" prefHeight="130.0" prefWidth="480.0">
+         <children>
+            <Label layoutX="190.0" layoutY="5.0" text="PLAYER TWO">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <ImageView fx:id="playerTwoLivesImageView" fitHeight="40.0" fitWidth="200.0" layoutX="140.0" layoutY="32.0" pickOnBounds="true" preserveRatio="true" />
+            <ImageView fx:id="playerTwoBulletsImageView" fitHeight="40.0" fitWidth="140.0" layoutX="180.0" layoutY="75.0" pickOnBounds="true" preserveRatio="true" />
+         </children></AnchorPane>
    </children>
 </AnchorPane>

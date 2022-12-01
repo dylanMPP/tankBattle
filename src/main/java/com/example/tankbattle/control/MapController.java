@@ -17,7 +17,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.util.Pair;
@@ -28,6 +27,19 @@ public class MapController implements Initializable {
     public Canvas mapCanvas;
     @FXML
     public ImageView background;
+
+    @FXML
+    public ImageView playerOneLivesImageView;
+
+    @FXML
+    public ImageView playerTwoLivesImageView;
+
+    @FXML
+    public ImageView playerOneBulletsImageView;
+
+    @FXML
+    public ImageView playerTwoBulletsImageView;
+
     private GraphicsContext gc;
     private boolean isRunning = true;
     //Elementos gráficos
@@ -44,12 +56,14 @@ public class MapController implements Initializable {
     boolean Spressed = false;
     boolean Dpressed = false;
     boolean spacePressed = false;
+    boolean RPressed = false;
     // Avatar 2
     boolean UpPressed = false;
     boolean DownPressed = false;
     boolean LefPressed = false;
     boolean RightPressed = false;
     boolean PPressed = false;
+    boolean EnterPressed = false;
     Image backgroundImage;
     boolean canMoveAvatar = true;
     boolean canMoveAvatar2 = true;
@@ -71,8 +85,8 @@ public class MapController implements Initializable {
 
         createMap();
 
-        avatar = new Avatar(mapCanvas);
-        avatar2 = new Avatar(mapCanvas);
+        avatar = new Avatar(mapCanvas, "file:" + TankBattleApplication.class.getResource("redTank.png").getPath());
+        avatar2 = new Avatar(mapCanvas, "file:" + TankBattleApplication.class.getResource("blueTank.png").getPath());
         avatars.add(avatar);
         avatars.add(avatar2);
 
@@ -83,10 +97,13 @@ public class MapController implements Initializable {
         // Añado los enemies u obstáculos al arreglo de shapes del mapa
         // Este arreglo de shapes del mapa me sirve para enviarlo como parámetro al verificar
         // colisiones para cada obstáculo con el fin de que desaparezca
-        for (int i = 0; i < obstacles.size(); i++) {
-            Shape rectangle1 = obstacles.get(i).rectangle;
+        for (Obstacle obstacle : obstacles) {
+            Shape rectangle1 = obstacle.rectangle;
             obstaclesShapes.add(rectangle1);
         }
+
+        drawLives();
+        drawBullets();
 
         // Añado los rectangulos (hitbox) de cada avatar al array list de shapes
         // de la controladora, para más adelante verificar si estos son tocados por alguna bala
@@ -117,15 +134,22 @@ public class MapController implements Initializable {
                                 obstacles.get(i).draw();
                             }
 
-                            for (int i = 0; i < avatars.size(); i++) {
-                                avatars.get(i).bulletThread();
-                            }
+                            avatar.bulletThread();
+                            avatar2.bulletThread();
+                            // (int i = 0; i < avatars.size(); i++) {
+                             //   avatars.get(i).bulletThread();
+                            //}
 
                             //Colisiones
+
+                            // Colision de avatar con obstaculos
                             detectObstacleCollisionsAvatar();
-                            // detectObstacleCollisionsAvatar2();
+                            detectObstacleCollisionsAvatar2();
+                            // Colision de balas con obstáculos
                             detectCollisions();
+                            // Colisión de avatares con balas
                             detectAvatarCollisions();
+
                             doKeyboardActions();
                         });
                         //Sleep
@@ -139,48 +163,68 @@ public class MapController implements Initializable {
         ).start();
     }
 
-    /* public void detectObstacleCollisionsAvatar2() {
-        new Thread(() -> {
-            boolean canMoveit = true;
+    public void detectObstacleCollisionsAvatar2() {
+        // Hago un hilo que me verifique si el avatar (1 o 2) choca con algún obstáculo (sin incluir las balas), estás
+        // después son verificadas con otro hilo.
 
-            for (int j = 0; j < obstaclesShapes.size(); j++) {
-                Shape shape = new Rectangle(avatar2.pos.x + avatar2.direction.x, avatar2.pos.y + avatar2.direction.y, 50, 50);
+        // Entonces, lo que hago es crear una shape auxiliar, que tenga el movimiento propuesto por el jugador,
+        // es decir, yo hago el auxiliar y este tiene como coordenadas las coordenadas que tendría el tanque si se pudiése
+        // mover, para verificar si sí puedo moverme o no y para que el tanque no quede dentro del objeto.
 
-                if (obstaclesShapes.get(j).intersects(shape.getBoundsInParent())) {
-                    canMoveit = false;
+        // Asimismo, recorro el arreglo de las shapes de los objetos (aquí están los bloques y paredes), cuando encuentre
+        // que choca con alguno, el for hace break (esto con el fin de que no siga y que si encuentra que no choca
+        // con un bloque pues la variable de si se puede mover se actualice a true). Entonces, si pasó por todos los objetos
+        // y no encontró con ninguno que choca, la variable de canMoveAvatar1 o 2, se queda en true, y más adelante
+        // cuando ejecuto el método de doKeyboardActions, las acciones se realicen. En caso de que la variable
+        // quede falsa, las acciones no se realizan.
+        new Thread(()->{
+            for(int j=0;j<obstaclesShapes.size();j++){
+                Shape shape = null;
+
+                if (DownPressed) {
+                    shape=new Rectangle(avatar2.pos.x-avatar.direction.x-25,avatar2.pos.y-avatar2.direction.y-25,50,50);
+                } else if (UpPressed){
+                    shape=new Rectangle(avatar2.pos.x+avatar.direction.x-25,avatar2.pos.y+avatar2.direction.y-25,50,50);
                 }
-            }//for
 
-            if (canMoveit) {
-                doKeyboardActions();
+                if(shape!=null){
+                    if(obstaclesShapes.get(j).intersects(shape.getBoundsInParent())) {
+                        canMoveAvatar2 = false;
+                        break;
+                    } else {
+                        canMoveAvatar2 = true;
+                    }
+                }
             }
             //Sleep
-            try {
+            try{
                 Thread.sleep(20);
-            } catch (InterruptedException e) {
+            }catch(InterruptedException e){
                 throw new RuntimeException(e);
             }
         }).start();
-    } */
+    }
 
     public void detectObstacleCollisionsAvatar() {
         new Thread(()->{
             for(int j=0;j<obstaclesShapes.size();j++){
-                Shape shape=new Rectangle(avatar.pos.x+avatar.direction.x-25,avatar.pos.y+avatar.direction.y-25,50,50);
-	            /*System.out.println("xdeavatar:"+(avatar.pos.x+avatar.direction.x-25));
-	            System.out.println("ydeavatar:"+(avatar.pos.y+avatar.direction.y-25));
+                Shape shape = null;
 
-	            System.out.println("xdeobstacle"+obstaclesShapes.get(j).getScaleX());
-	            System.out.println("ydeobstacle"+obstaclesShapes.get(j).getScaleY());
-	            */
-
-                if(obstaclesShapes.get(j).intersects(shape.getBoundsInParent())){
-                    System.out.println("retornofalso");
-                    canMoveAvatar=false;
-                }else{
-                    canMoveAvatar=true;
+                if (Spressed) {
+                    shape=new Rectangle(avatar.pos.x-avatar.direction.x-25,avatar.pos.y-avatar.direction.y-25,50,50);
+                } else if (Wpressed){
+                    shape=new Rectangle(avatar.pos.x+avatar.direction.x-25,avatar.pos.y+avatar.direction.y-25,50,50);
                 }
-            }//for
+
+                if(shape!=null){
+                    if(obstaclesShapes.get(j).intersects(shape.getBoundsInParent())) {
+                        canMoveAvatar = false;
+                        break;
+                    } else {
+                        canMoveAvatar = true;
+                    }
+                }
+            }
             //Sleep
             try{
                 Thread.sleep(20);
@@ -224,7 +268,8 @@ public class MapController implements Initializable {
             }
         }
 
-        Pair<ArrayList<Shape>, ArrayList<Avatar>> pair2 = avatar2.detectAvatarCollisions(avatarShapes, avatars, avatarPos);
+        Pair<ArrayList<Shape>, ArrayList<Avatar>> pair2 = avatar2.
+                detectAvatarCollisions(avatarShapes, avatars, avatarPos);
         this.avatarShapes = pair2.getKey();
         this.avatars = pair2.getValue();
     }
@@ -233,7 +278,7 @@ public class MapController implements Initializable {
         // cambio el ángulo cuando muevo al tanque a derecha o izquierda
         // usando el método changeAngle del avatar o del enemigo, le sumo o le resto
         // el ángulo que yo desee, en este caso 6, para que no gire tanto
-        System.out.println("can move avatar 1 en do keyboard: " + canMoveAvatar);
+
         if (canMoveAvatar) {
             if (Wpressed) {
                 avatar.moveForward();
@@ -249,7 +294,7 @@ public class MapController implements Initializable {
             }
         }
 
-        if (canMoveAvatar2) {
+        if (canMoveAvatar2 && avatar2.lives >0) {
             // Avatar 2
             if (UpPressed) {
                 avatar2.moveForward();
@@ -280,6 +325,10 @@ public class MapController implements Initializable {
             Dpressed = false;
         }
 
+        if (keyEvent.getCode() == KeyCode.R) {
+            RPressed= false;
+        }
+
         if (keyEvent.getCode() == KeyCode.SPACE) {
             spacePressed = false;
         }
@@ -298,45 +347,62 @@ public class MapController implements Initializable {
             RightPressed = false;
         }
 
+        if(keyEvent.getCode() == KeyCode.ENTER){
+            EnterPressed = false;
+        }
+
         if (keyEvent.getCode() == KeyCode.P) {
             PPressed = false;
         }
     }
 
     private void onKeyPressed(KeyEvent keyEvent) {
-        if (keyEvent.getCode() == KeyCode.W) {
-            Wpressed = true;
-        }
-        if (keyEvent.getCode() == KeyCode.A) {
-            Apressed = true;
-        }
-        if (keyEvent.getCode() == KeyCode.S) {
-            Spressed = true;
-        }
-        if (keyEvent.getCode() == KeyCode.D) {
-            Dpressed = true;
-        }
 
-        if (keyEvent.getCode() == KeyCode.SPACE) {
-            avatar.addBullet();
+        if(avatar.lives >0){
+            if (keyEvent.getCode() == KeyCode.W) {
+                Wpressed = true;
+            }
+            if (keyEvent.getCode() == KeyCode.A) {
+                Apressed = true;
+            }
+            if (keyEvent.getCode() == KeyCode.S) {
+                Spressed = true;
+            }
+            if (keyEvent.getCode() == KeyCode.D) {
+                Dpressed = true;
+            }
+
+            if(keyEvent.getCode() == KeyCode.R){
+                avatar.reload();
+            }
+
+            if (keyEvent.getCode() == KeyCode.SPACE) {
+                avatar.addBullet();
+            }
         }
 
         // Avatar 2
-        if (keyEvent.getCode() == KeyCode.UP) {
-            UpPressed = true;
-        }
-        if (keyEvent.getCode() == KeyCode.LEFT) {
-            LefPressed = true;
-        }
-        if (keyEvent.getCode() == KeyCode.DOWN) {
-            DownPressed = true;
-        }
-        if (keyEvent.getCode() == KeyCode.RIGHT) {
-            RightPressed = true;
-        }
+        if(avatar2.lives >0){
+            if (keyEvent.getCode() == KeyCode.UP) {
+                UpPressed = true;
+            }
+            if (keyEvent.getCode() == KeyCode.LEFT) {
+                LefPressed = true;
+            }
+            if (keyEvent.getCode() == KeyCode.DOWN) {
+                DownPressed = true;
+            }
+            if (keyEvent.getCode() == KeyCode.RIGHT) {
+                RightPressed = true;
+            }
 
-        if (keyEvent.getCode() == KeyCode.P) {
-            avatar2.addBullet();
+            if(keyEvent.getCode() == KeyCode.ENTER){
+                avatar2.reload();
+            }
+
+            if (keyEvent.getCode() == KeyCode.P) {
+                avatar2.addBullet();
+            }
         }
     }
 
@@ -349,17 +415,97 @@ public class MapController implements Initializable {
         obstacles.add(new Obstacle(mapCanvas, path, 300, (20 + height)));
         obstacles.add(new Obstacle(mapCanvas, path, 300, (20 + height * 2)));
         obstacles.add(new Obstacle(mapCanvas, path, 300, (20 + height * 3)));
-        // Rectangle rectangle = new Rectangle(300-20, 20, 20,20+height*4);
 
 
         obstacles.add(new Obstacle(mapCanvas, path, 500, (200 + height)));
+
         obstacles.add(new Obstacle(mapCanvas, path, 500, (280 + height)));
         obstacles.add(new Obstacle(mapCanvas, path, 500, (320 + height)));
-        // Rectangle rectangle1 = new Rectangle(20, 20, 40,40);
 
         obstacles.add(new Obstacle(mapCanvas, path, 400, ((int) mapCanvas.getHeight() - 20)));
         obstacles.add(new Obstacle(mapCanvas, path, 400, ((int) mapCanvas.getHeight() - 60)));
         obstacles.add(new Obstacle(mapCanvas, path, 400, ((int) mapCanvas.getHeight() - 100)));
+    }
 
+    public void drawLives(){
+        new Thread(() -> {
+            while(isRunning){
+                if(avatar.lives ==5){
+                    playerOneLivesImageView.setImage(new Image("file:" + TankBattleApplication.class.getResource("5hearts.png").getPath()));
+                } else if(avatar.lives ==4){
+                    playerOneLivesImageView.setImage(new Image("file:" + TankBattleApplication.class.getResource("4hearts.png").getPath()));
+                } else if(avatar.lives ==3){
+                    playerOneLivesImageView.setImage(new Image("file:" + TankBattleApplication.class.getResource("3hearts.png").getPath()));
+                } else if(avatar.lives ==2){
+                    playerOneLivesImageView.setImage(new Image("file:" + TankBattleApplication.class.getResource("2hearts.png").getPath()));
+                } else if(avatar.lives ==1){
+                    playerOneLivesImageView.setImage(new Image("file:" + TankBattleApplication.class.getResource("1heart.png").getPath()));
+                } else {
+                    playerOneLivesImageView.setImage(new Image("file:" + TankBattleApplication.class.getResource("skull-0 lifes.png").getPath()));
+                }
+
+                // Avatar 2
+                if(avatar2.lives ==5){
+                    playerTwoLivesImageView.setImage(new Image("file:" + TankBattleApplication.class.getResource("5hearts.png").getPath()));
+                } else if(avatar2.lives ==4){
+                    playerTwoLivesImageView.setImage(new Image("file:" + TankBattleApplication.class.getResource("4hearts.png").getPath()));
+                } else if(avatar2.lives ==3){
+                    playerTwoLivesImageView.setImage(new Image("file:" + TankBattleApplication.class.getResource("3hearts.png").getPath()));
+                } else if(avatar2.lives ==2){
+                    playerTwoLivesImageView.setImage(new Image("file:" + TankBattleApplication.class.getResource("2hearts.png").getPath()));
+                } else if(avatar2.lives ==1){
+                    playerTwoLivesImageView.setImage(new Image("file:" + TankBattleApplication.class.getResource("1heart.png").getPath()));
+                } else {
+                    playerTwoLivesImageView.setImage(new Image("file:" + TankBattleApplication.class.getResource("skull-0 lifes.png").getPath()));
+                }
+            }
+
+            try{
+                Thread.sleep(20);
+            }catch(InterruptedException e){
+                throw new RuntimeException(e);
+            }
+        }).start();
+    }
+
+    public void drawBullets(){
+        /*new Thread(() -> {
+            while(isRunning){
+                if(avatar.ammo ==5){
+                    playerOneBulletsImageView.setImage(new Image("file:" + TankBattleApplication.class.getResource("5bullet.png").getPath()));
+                } else if(avatar.ammo ==4){
+                    playerOneBulletsImageView.setImage(new Image("file:" + TankBattleApplication.class.getResource("4bullet.png").getPath()));
+                } else if(avatar.ammo ==3){
+                    playerOneBulletsImageView.setImage(new Image("file:" + TankBattleApplication.class.getResource("3bullet.png").getPath()));
+                } else if(avatar.ammo ==2){
+                    playerOneBulletsImageView.setImage(new Image("file:" + TankBattleApplication.class.getResource("2bullet.png").getPath()));
+                } else if(avatar.ammo ==1){
+                    playerOneBulletsImageView.setImage(new Image("file:" + TankBattleApplication.class.getResource("1bullet.png").getPath()));
+                } else{
+
+                }
+                // Avatar 2
+                if(avatar2.ammo ==5){
+                    playerTwoBulletsImageView.setImage(new Image("file:" + TankBattleApplication.class.getResource("5bullet.png").getPath()));
+                } else if(avatar2.ammo ==4){
+                    playerTwoBulletsImageView.setImage(new Image("file:" + TankBattleApplication.class.getResource("4bullet.png").getPath()));
+                } else if(avatar2.ammo ==3){
+                    playerTwoBulletsImageView.setImage(new Image("file:" + TankBattleApplication.class.getResource("3bullet.png").getPath()));
+                } else if(avatar2.ammo ==2){
+                    playerTwoBulletsImageView.setImage(new Image("file:" + TankBattleApplication.class.getResource("2bullet.png").getPath()));
+                } else if(avatar2.ammo ==1){
+                    playerTwoBulletsImageView.setImage(new Image("file:" + TankBattleApplication.class.getResource("1bullet.png").getPath()));
+                } else {
+
+                }
+            }
+
+            try{
+                Thread.sleep(20);
+            }catch(InterruptedException e){
+                throw new RuntimeException(e);
+            }
+        }).start();
+        */
     }
 }
