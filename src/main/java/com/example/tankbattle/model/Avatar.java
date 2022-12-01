@@ -1,5 +1,6 @@
 package com.example.tankbattle.model;
 
+import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -101,24 +102,27 @@ public class Avatar {
 
     public void bulletThread() {
         new Thread(() -> {
+            Platform.runLater(() -> {
+                for (int i = 0; i < bullets.size(); i++) {
+                    try{
+                        bulletsShapes.set(i, bullets.get(i).draw(pathImage));
+                    } catch (IndexOutOfBoundsException indexOutOfBoundsException){
+                        System.out.println("No bullets");
+                    }
+                }
+            });
+
             for (int i = 0; i < bullets.size(); i++) {
                 System.out.println("bullets size:"+bullets.size());
                 // dibujo las balas con el .draw y verifico que no se salió de la pantalla
 
                 // Seteo las shapes de las bullets en su posición usando el .draw, ya que me devuelve
                 // la shape en la posición hacia donde se movió
-                try{
-                    bulletsShapes.set(i, bullets.get(i).draw(pathImage));
-                } catch (IndexOutOfBoundsException indexOutOfBoundsException){
-                    System.out.println("No bullets");
-                }
-
 
                 if (bullets.get(i).pos.x > canvas.getWidth() + 20 || bullets.get(i).pos.y > canvas.getHeight() + 20 ||
                         bullets.get(i).pos.y < -20 ||
                         bullets.get(i).pos.x < -20
                 ) {
-                    System.out.println("removed");
                     bullets.remove(i);
                 }
 

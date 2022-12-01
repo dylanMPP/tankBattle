@@ -19,7 +19,7 @@
                </font>
             </Label>
             <ImageView fx:id="playerOneLivesImageView" fitHeight="40.0" fitWidth="200.0" layoutX="140.0" layoutY="32.0" pickOnBounds="true" preserveRatio="true" />
-            <ImageView fx:id="playerOneBulletsImageView" fitHeight="40.0" fitWidth="140.0" layoutX="180.0" layoutY="75.0" pickOnBounds="true" preserveRatio="true" />
+            <ImageView fx:id="playerOneBulletsImageView" fitHeight="40.0" fitWidth="120.0" layoutX="185.0" layoutY="75.0" pickOnBounds="true" preserveRatio="true" />
          </children></AnchorPane>
       <AnchorPane layoutX="480.0" prefHeight="130.0" prefWidth="480.0" />
       <AnchorPane layoutX="480.0" layoutY="670.0" prefHeight="130.0" prefWidth="480.0">
@@ -30,7 +30,7 @@
                </font>
             </Label>
             <ImageView fx:id="playerTwoLivesImageView" fitHeight="40.0" fitWidth="200.0" layoutX="140.0" layoutY="32.0" pickOnBounds="true" preserveRatio="true" />
-            <ImageView fx:id="playerTwoBulletsImageView" fitHeight="40.0" fitWidth="140.0" layoutX="180.0" layoutY="75.0" pickOnBounds="true" preserveRatio="true" />
+            <ImageView fx:id="playerTwoBulletsImageView" fitHeight="40.0" fitWidth="120.0" layoutX="185.0" layoutY="75.0" pickOnBounds="true" preserveRatio="true" />
          </children></AnchorPane>
    </children>
 </AnchorPane>

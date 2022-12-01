@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="800.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.tankbattle.control.StartMenuController">
+   <children>
+      <ImageView fitHeight="800.0" fitWidth="960.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@startBackground.png" />
+         </image>
+      </ImageView>
+      <Button fx:id="startBtn" layoutX="375.0" layoutY="600.0" mnemonicParsing="false" onAction="#onStartBtnClick" prefHeight="80.0" prefWidth="209.0" visible="false" />
+      <ImageView fitHeight="80.0" fitWidth="209.0" layoutX="375.0" layoutY="600.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@startBtnImage.png" />
+         </image>
+      </ImageView>
+   </children>
+</AnchorPane>

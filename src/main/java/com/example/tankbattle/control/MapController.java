@@ -463,39 +463,41 @@ public class MapController implements Initializable {
         obstacles.add(new Obstacle(mapCanvas, path, 400, ((int) mapCanvas.getHeight() - 20)));
         obstacles.add(new Obstacle(mapCanvas, path, 400, ((int) mapCanvas.getHeight() - 60)));
         obstacles.add(new Obstacle(mapCanvas, path, 400, ((int) mapCanvas.getHeight() - 100)));
+
+        obstacles.add(new Obstacle(mapCanvas, path, 400, ((int) mapCanvas.getHeight() - 100)));
     }
 
     public void drawLives(){
         new Thread(() -> {
             while(isRunning){
-                if(avatar.lives ==5){
-                    playerOneLivesImageView.setImage(fiveHeartsImage);
-                } else if(avatar.lives ==4){
-                    playerOneLivesImageView.setImage(fourHeartsImage);
-                } else if(avatar.lives ==3){
-                    playerOneLivesImageView.setImage(threeHeartsImage);
-                } else if(avatar.lives ==2){
-                    playerOneLivesImageView.setImage(twoHeartsImage);
-                } else if(avatar.lives ==1){
-                    playerOneLivesImageView.setImage(oneHeartImage);
-                } else {
-                    playerOneLivesImageView.setImage(zeroHeartImage);
-                }
+                    if(avatar.lives ==5){
+                        playerOneLivesImageView.setImage(fiveHeartsImage);
+                    } else if(avatar.lives ==4){
+                        playerOneLivesImageView.setImage(fourHeartsImage);
+                    } else if(avatar.lives ==3){
+                        playerOneLivesImageView.setImage(threeHeartsImage);
+                    } else if(avatar.lives ==2){
+                        playerOneLivesImageView.setImage(twoHeartsImage);
+                    } else if(avatar.lives ==1){
+                        playerOneLivesImageView.setImage(oneHeartImage);
+                    } else {
+                        playerOneLivesImageView.setImage(zeroHeartImage);
+                    }
 
-                // Avatar 2
-                if(avatar2.lives ==5){
-                    playerTwoLivesImageView.setImage(fiveHeartsImage);
-                } else if(avatar2.lives ==4){
-                    playerTwoLivesImageView.setImage(fourHeartsImage);
-                } else if(avatar2.lives ==3){
-                    playerTwoLivesImageView.setImage(threeHeartsImage);
-                } else if(avatar2.lives ==2){
-                    playerTwoLivesImageView.setImage(twoHeartsImage);
-                } else if(avatar2.lives ==1){
-                    playerTwoLivesImageView.setImage(oneHeartImage);
-                } else {
-                    playerTwoLivesImageView.setImage(zeroHeartImage);
-                }
+                    // Avatar 2
+                    if(avatar2.lives ==5){
+                        playerTwoLivesImageView.setImage(fiveHeartsImage);
+                    } else if(avatar2.lives ==4){
+                        playerTwoLivesImageView.setImage(fourHeartsImage);
+                    } else if(avatar2.lives ==3){
+                        playerTwoLivesImageView.setImage(threeHeartsImage);
+                    } else if(avatar2.lives ==2){
+                        playerTwoLivesImageView.setImage(twoHeartsImage);
+                    } else if(avatar2.lives ==1){
+                        playerTwoLivesImageView.setImage(oneHeartImage);
+                    } else {
+                        playerTwoLivesImageView.setImage(zeroHeartImage);
+                    }
             }
 
             try{
@@ -509,33 +511,33 @@ public class MapController implements Initializable {
     public void drawBullets(){
         new Thread(() -> {
             while(isRunning){
-                if(avatar.ammo ==5){
-                    playerOneBulletsImageView.setImage(fiveBulletsImage);
-                } else if(avatar.ammo ==4){
-                    playerOneBulletsImageView.setImage(fourBulletsImage);
-                } else if(avatar.ammo ==3){
-                    playerOneBulletsImageView.setImage(threeBulletsImage);
-                } else if(avatar.ammo ==2){
-                    playerOneBulletsImageView.setImage(twoBulletsImage);
-                } else if(avatar.ammo ==1){
-                    playerOneBulletsImageView.setImage(oneBulletImage);
-                } else{
+                    if(avatar.ammo ==5){
+                        playerOneBulletsImageView.setImage(fiveBulletsImage);
+                    } else if(avatar.ammo ==4){
+                        playerOneBulletsImageView.setImage(fourBulletsImage);
+                    } else if(avatar.ammo ==3){
+                        playerOneBulletsImageView.setImage(threeBulletsImage);
+                    } else if(avatar.ammo ==2){
+                        playerOneBulletsImageView.setImage(twoBulletsImage);
+                    } else if(avatar.ammo ==1){
+                        playerOneBulletsImageView.setImage(oneBulletImage);
+                    } else{
 
-                }
-                // Avatar 2
-                if(avatar2.ammo ==5){
-                    playerTwoBulletsImageView.setImage(fiveBulletsImage);
-                } else if(avatar2.ammo ==4){
-                    playerTwoBulletsImageView.setImage(fourBulletsImage);
-                } else if(avatar2.ammo ==3){
-                    playerTwoBulletsImageView.setImage(threeBulletsImage);
-                } else if(avatar2.ammo ==2){
-                    playerTwoBulletsImageView.setImage(twoBulletsImage);
-                } else if(avatar2.ammo ==1){
-                    playerTwoBulletsImageView.setImage(oneBulletImage);
-                } else {
+                    }
+                    // Avatar 2
+                    if(avatar2.ammo ==5){
+                        playerTwoBulletsImageView.setImage(fiveBulletsImage);
+                    } else if(avatar2.ammo ==4){
+                        playerTwoBulletsImageView.setImage(fourBulletsImage);
+                    } else if(avatar2.ammo ==3){
+                        playerTwoBulletsImageView.setImage(threeBulletsImage);
+                    } else if(avatar2.ammo ==2){
+                        playerTwoBulletsImageView.setImage(twoBulletsImage);
+                    } else if(avatar2.ammo ==1){
+                        playerTwoBulletsImageView.setImage(oneBulletImage);
+                    } else {
 
-                }
+                    }
             }
 
             try{
