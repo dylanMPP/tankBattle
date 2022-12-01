@@ -9,6 +9,8 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 public class Bullet {
@@ -19,8 +21,20 @@ public class Bullet {
 
     public int x,y;
 
+    public Image image;
+
     public Bullet(Canvas canvas,Vector pos, Vector direction) {
         this.canvas = canvas;
+
+        //String path = "file:" + TankBattleApplication.class.getResource("circleBullet.png").getPath();
+        try{
+            System.out.println(System.getProperty("user.dir"));
+            this.image = new Image(new FileInputStream("src/data/circleBullet.png"));
+        } catch (FileNotFoundException fileNotFoundException){
+            throw new RuntimeException();
+        }
+
+
         gc = canvas.getGraphicsContext2D();
         this.pos = pos;
         this.direction = direction;
@@ -32,15 +46,15 @@ public class Bullet {
 
         // String path = "file:" + TankBattleApplication.class.getResource("circleBullet.png").getPath();
         // Image image = new Image(path);
-        // gc.drawImage(image, pos.x, pos.y, 10, 10);
+        gc.drawImage(this.image, pos.x, pos.y, 10, 10);
 
-        if(pathImage.contains("red")){
-            gc.setFill(Color.RED);
-        } else if(pathImage.contains("blue")){
-            gc.setFill(Color.BLUE);
-        } else if(pathImage.contains("yellow")){
-            gc.setFill(Color.YELLOW);
-        }
+        //if(pathImage.contains("red")){
+        //    gc.setFill(Color.RED);
+        //} else if(pathImage.contains("blue")){
+        //    gc.setFill(Color.BLUE);
+        //} else if(pathImage.contains("yellow")){
+        //    gc.setFill(Color.YELLOW);
+        //}
 
         gc.fillOval(pos.x, pos.y,10,10);
         // Sumo los dos vectores, es como si fuesen paralelos, entonces inicio desde la posición
