@@ -23,17 +23,16 @@ public class Bullet {
 
     public Image image;
 
-    public Bullet(Canvas canvas,Vector pos, Vector direction) {
+    public Bullet(Canvas canvas,Vector pos, Vector direction, Image bulletImage) {
         this.canvas = canvas;
 
         //String path = "file:" + TankBattleApplication.class.getResource("circleBullet.png").getPath();
-        try{
-            System.out.println(System.getProperty("user.dir"));
-            this.image = new Image(new FileInputStream("src/data/circleBullet.png"));
-        } catch (FileNotFoundException fileNotFoundException){
-            throw new RuntimeException();
-        }
-
+        //try{
+        //    this.image = new Image(new FileInputStream("src/data/circleBullet.png"));
+        //} catch (FileNotFoundException fileNotFoundException){
+        //    throw new RuntimeException();
+        //}
+        this.image = bulletImage;
 
         gc = canvas.getGraphicsContext2D();
         this.pos = pos;

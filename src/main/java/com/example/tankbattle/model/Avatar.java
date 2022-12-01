@@ -85,10 +85,10 @@ public class Avatar {
         pos.y -= direction.y;
     }
 
-    public void addBullet() {
+    public void addBullet(Image bulletImage) {
         if(!(ammo-1 < 0)){
             ammo -= 1;
-            Bullet bullet = new Bullet(canvas, new Vector(pos.x, pos.y), new Vector(direction.x, direction.y));
+            Bullet bullet = new Bullet(canvas, new Vector(pos.x, pos.y), new Vector(direction.x, direction.y), bulletImage);
             Shape circle = new Circle(bullet.x, bullet.y, 5);
             bulletsShapes.add(circle);
             bullets.add(bullet);
@@ -120,6 +120,12 @@ public class Avatar {
                 ) {
                     System.out.println("removed");
                     bullets.remove(i);
+                }
+
+                try{
+                    Thread.sleep(10);
+                }catch(InterruptedException e){
+                    throw new RuntimeException(e);
                 }
             }
         }).start();

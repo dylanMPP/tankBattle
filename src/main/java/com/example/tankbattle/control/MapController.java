@@ -8,6 +8,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 
+import java.io.FileInputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
@@ -64,15 +65,52 @@ public class MapController implements Initializable {
     boolean RightPressed = false;
     boolean PPressed = false;
     boolean EnterPressed = false;
-    Image backgroundImage;
     boolean canMoveAvatar = true;
     boolean canMoveAvatar2 = true;
+    Image backgroundImage;
+    Image bulletImage;
+    Image fiveHeartsImage;
+    Image fourHeartsImage;
+    Image threeHeartsImage;
+    Image twoHeartsImage;
+    Image oneHeartImage;
+    Image zeroHeartImage;
+    Image fiveBulletsImage;
+    Image fourBulletsImage;
+    Image threeBulletsImage;
+    Image twoBulletsImage;
+    Image oneBulletImage;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         gc = mapCanvas.getGraphicsContext2D();
+        // cargue de imágenes
         String uri = "file:" + TankBattleApplication.class.getResource("map-snow.png").getPath();
         backgroundImage = new Image(uri);
+        uri = "file:" + TankBattleApplication.class.getResource("circleBullet.png").getPath();
+        bulletImage = new Image(uri);
+        uri = "file:" + TankBattleApplication.class.getResource("5hearts.png").getPath();
+        fiveHeartsImage = new Image(uri);
+        uri = "file:" + TankBattleApplication.class.getResource("4hearts.png").getPath();
+        fourHeartsImage = new Image(uri);
+        uri = "file:" + TankBattleApplication.class.getResource("3hearts.png").getPath();
+        threeHeartsImage = new Image(uri);
+        uri = "file:" + TankBattleApplication.class.getResource("2hearts.png").getPath();
+        twoHeartsImage = new Image(uri);
+        uri = "file:" + TankBattleApplication.class.getResource("1heart.png").getPath();
+        oneHeartImage = new Image(uri);
+        uri = "file:" + TankBattleApplication.class.getResource("skull-0 lifes.png").getPath();
+        zeroHeartImage = new Image(uri);
+        uri = "file:" + TankBattleApplication.class.getResource("5bullet.png").getPath();
+        fiveBulletsImage = new Image(uri);
+        uri = "file:" + TankBattleApplication.class.getResource("4bullet.png").getPath();
+        fourBulletsImage = new Image(uri);
+        uri = "file:" + TankBattleApplication.class.getResource("3bullet.png").getPath();
+        threeBulletsImage = new Image(uri);
+        uri = "file:" + TankBattleApplication.class.getResource("2bullet.png").getPath();
+        twoBulletsImage = new Image(uri);
+        uri = "file:" + TankBattleApplication.class.getResource("1bullet.png").getPath();
+        oneBulletImage = new Image(uri);
 
         mapCanvas.setFocusTraversable(true);
         mapCanvas.setOnKeyPressed(this::onKeyPressed);
@@ -227,7 +265,7 @@ public class MapController implements Initializable {
             }
             //Sleep
             try{
-                Thread.sleep(20);
+                Thread.sleep(40);
             }catch(InterruptedException e){
                 throw new RuntimeException(e);
             }
@@ -377,7 +415,7 @@ public class MapController implements Initializable {
             }
 
             if (keyEvent.getCode() == KeyCode.SPACE) {
-                avatar.addBullet();
+                avatar.addBullet(bulletImage);
             }
         }
 
@@ -401,7 +439,7 @@ public class MapController implements Initializable {
             }
 
             if (keyEvent.getCode() == KeyCode.P) {
-                avatar2.addBullet();
+                avatar2.addBullet(bulletImage);
             }
         }
     }
@@ -431,32 +469,32 @@ public class MapController implements Initializable {
         new Thread(() -> {
             while(isRunning){
                 if(avatar.lives ==5){
-                    playerOneLivesImageView.setImage(new Image("file:" + TankBattleApplication.class.getResource("5hearts.png").getPath()));
+                    playerOneLivesImageView.setImage(fiveHeartsImage);
                 } else if(avatar.lives ==4){
-                    playerOneLivesImageView.setImage(new Image("file:" + TankBattleApplication.class.getResource("4hearts.png").getPath()));
+                    playerOneLivesImageView.setImage(fourHeartsImage);
                 } else if(avatar.lives ==3){
-                    playerOneLivesImageView.setImage(new Image("file:" + TankBattleApplication.class.getResource("3hearts.png").getPath()));
+                    playerOneLivesImageView.setImage(threeHeartsImage);
                 } else if(avatar.lives ==2){
-                    playerOneLivesImageView.setImage(new Image("file:" + TankBattleApplication.class.getResource("2hearts.png").getPath()));
+                    playerOneLivesImageView.setImage(twoHeartsImage);
                 } else if(avatar.lives ==1){
-                    playerOneLivesImageView.setImage(new Image("file:" + TankBattleApplication.class.getResource("1heart.png").getPath()));
+                    playerOneLivesImageView.setImage(oneHeartImage);
                 } else {
-                    playerOneLivesImageView.setImage(new Image("file:" + TankBattleApplication.class.getResource("skull-0 lifes.png").getPath()));
+                    playerOneLivesImageView.setImage(zeroHeartImage);
                 }
 
                 // Avatar 2
                 if(avatar2.lives ==5){
-                    playerTwoLivesImageView.setImage(new Image("file:" + TankBattleApplication.class.getResource("5hearts.png").getPath()));
+                    playerTwoLivesImageView.setImage(fiveHeartsImage);
                 } else if(avatar2.lives ==4){
-                    playerTwoLivesImageView.setImage(new Image("file:" + TankBattleApplication.class.getResource("4hearts.png").getPath()));
+                    playerTwoLivesImageView.setImage(fourHeartsImage);
                 } else if(avatar2.lives ==3){
-                    playerTwoLivesImageView.setImage(new Image("file:" + TankBattleApplication.class.getResource("3hearts.png").getPath()));
+                    playerTwoLivesImageView.setImage(threeHeartsImage);
                 } else if(avatar2.lives ==2){
-                    playerTwoLivesImageView.setImage(new Image("file:" + TankBattleApplication.class.getResource("2hearts.png").getPath()));
+                    playerTwoLivesImageView.setImage(twoHeartsImage);
                 } else if(avatar2.lives ==1){
-                    playerTwoLivesImageView.setImage(new Image("file:" + TankBattleApplication.class.getResource("1heart.png").getPath()));
+                    playerTwoLivesImageView.setImage(oneHeartImage);
                 } else {
-                    playerTwoLivesImageView.setImage(new Image("file:" + TankBattleApplication.class.getResource("skull-0 lifes.png").getPath()));
+                    playerTwoLivesImageView.setImage(zeroHeartImage);
                 }
             }
 
@@ -469,32 +507,32 @@ public class MapController implements Initializable {
     }
 
     public void drawBullets(){
-        /*new Thread(() -> {
+        new Thread(() -> {
             while(isRunning){
                 if(avatar.ammo ==5){
-                    playerOneBulletsImageView.setImage(new Image("file:" + TankBattleApplication.class.getResource("5bullet.png").getPath()));
+                    playerOneBulletsImageView.setImage(fiveBulletsImage);
                 } else if(avatar.ammo ==4){
-                    playerOneBulletsImageView.setImage(new Image("file:" + TankBattleApplication.class.getResource("4bullet.png").getPath()));
+                    playerOneBulletsImageView.setImage(fourBulletsImage);
                 } else if(avatar.ammo ==3){
-                    playerOneBulletsImageView.setImage(new Image("file:" + TankBattleApplication.class.getResource("3bullet.png").getPath()));
+                    playerOneBulletsImageView.setImage(threeBulletsImage);
                 } else if(avatar.ammo ==2){
-                    playerOneBulletsImageView.setImage(new Image("file:" + TankBattleApplication.class.getResource("2bullet.png").getPath()));
+                    playerOneBulletsImageView.setImage(twoBulletsImage);
                 } else if(avatar.ammo ==1){
-                    playerOneBulletsImageView.setImage(new Image("file:" + TankBattleApplication.class.getResource("1bullet.png").getPath()));
+                    playerOneBulletsImageView.setImage(oneBulletImage);
                 } else{
 
                 }
                 // Avatar 2
                 if(avatar2.ammo ==5){
-                    playerTwoBulletsImageView.setImage(new Image("file:" + TankBattleApplication.class.getResource("5bullet.png").getPath()));
+                    playerTwoBulletsImageView.setImage(fiveBulletsImage);
                 } else if(avatar2.ammo ==4){
-                    playerTwoBulletsImageView.setImage(new Image("file:" + TankBattleApplication.class.getResource("4bullet.png").getPath()));
+                    playerTwoBulletsImageView.setImage(fourBulletsImage);
                 } else if(avatar2.ammo ==3){
-                    playerTwoBulletsImageView.setImage(new Image("file:" + TankBattleApplication.class.getResource("3bullet.png").getPath()));
+                    playerTwoBulletsImageView.setImage(threeBulletsImage);
                 } else if(avatar2.ammo ==2){
-                    playerTwoBulletsImageView.setImage(new Image("file:" + TankBattleApplication.class.getResource("2bullet.png").getPath()));
+                    playerTwoBulletsImageView.setImage(twoBulletsImage);
                 } else if(avatar2.ammo ==1){
-                    playerTwoBulletsImageView.setImage(new Image("file:" + TankBattleApplication.class.getResource("1bullet.png").getPath()));
+                    playerTwoBulletsImageView.setImage(oneBulletImage);
                 } else {
 
                 }
@@ -506,6 +544,5 @@ public class MapController implements Initializable {
                 throw new RuntimeException(e);
             }
         }).start();
-        */
     }
 }
