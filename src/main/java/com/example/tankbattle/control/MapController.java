@@ -23,54 +23,42 @@ import javafx.scene.shape.Shape;
 import javafx.util.Pair;
 
 public class MapController implements Initializable {
-
     //Variables globales de la ventana
     @FXML
     public Canvas mapCanvas;
-
     @FXML
     public ImageView background;
     private GraphicsContext gc;
     private boolean isRunning = true;
-
-
     //Elementos gráficos
     private Avatar avatar;
     private Avatar avatar2;
-
     private ArrayList<Obstacle> obstacles;
     private ArrayList<Avatar> avatars;
     private ArrayList<Shape> obstaclesShapes;
     private ArrayList<Shape> avatarShapes;
-
-
     //Estados de las teclas
     // Avatar 1
     boolean Wpressed = false;
     boolean Apressed = false;
     boolean Spressed = false;
     boolean Dpressed = false;
-
     boolean spacePressed = false;
-
     // Avatar 2
     boolean UpPressed = false;
     boolean DownPressed = false;
     boolean LefPressed = false;
     boolean RightPressed = false;
-
     boolean PPressed = false;
     Image backgroundImage;
-    boolean canMove;
-
-
+    boolean canMoveAvatar = true;
+    boolean canMoveAvatar2 = true;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         gc = mapCanvas.getGraphicsContext2D();
         String uri = "file:" + TankBattleApplication.class.getResource("map-snow.png").getPath();
         backgroundImage = new Image(uri);
-        canMove = true;
 
         mapCanvas.setFocusTraversable(true);
         mapCanvas.setOnKeyPressed(this::onKeyPressed);
@@ -115,7 +103,7 @@ public class MapController implements Initializable {
                         }
 
                         Platform.runLater(() -> {
-                            gc.drawImage(backgroundImage,0,0,mapCanvas.getWidth(), mapCanvas.getHeight());
+                            gc.drawImage(backgroundImage, 0, 0, mapCanvas.getWidth(), mapCanvas.getHeight());
 
                             // dependiendo de los avatars que hayan los dibujo
                             // estos se actualizan en la collision de avatars, van disminuyendo
@@ -129,16 +117,16 @@ public class MapController implements Initializable {
                                 obstacles.get(i).draw();
                             }
 
-                            avatar.bulletThread();
-                            avatar2.bulletThread();
+                            for (int i = 0; i < avatars.size(); i++) {
+                                avatars.get(i).bulletThread();
+                            }
+
                             //Colisiones
-                            detectObstacleCollisions();
+                            detectObstacleCollisionsAvatar();
+                            // detectObstacleCollisionsAvatar2();
                             detectCollisions();
                             detectAvatarCollisions();
-
-                            if(detectObstacleCollisions()){
-                                doKeyboardActions();
-                            }
+                            doKeyboardActions();
                         });
                         //Sleep
                         try {
@@ -151,19 +139,56 @@ public class MapController implements Initializable {
         ).start();
     }
 
-    public boolean detectObstacleCollisions(){
-        for (int i = 0; i < avatars.size(); i++) {
+    /* public void detectObstacleCollisionsAvatar2() {
+        new Thread(() -> {
+            boolean canMoveit = true;
+
             for (int j = 0; j < obstaclesShapes.size(); j++) {
-                Shape shape = new Rectangle(avatars.get(i).pos.x + avatars.get(i).direction.x,avatars.get(i).pos.y + avatars.get(i).direction.y);
+                Shape shape = new Rectangle(avatar2.pos.x + avatar2.direction.x, avatar2.pos.y + avatar2.direction.y, 50, 50);
+
+                if (obstaclesShapes.get(j).intersects(shape.getBoundsInParent())) {
+                    canMoveit = false;
+                }
+            }//for
+
+            if (canMoveit) {
+                doKeyboardActions();
+            }
+            //Sleep
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
+    } */
+
+    public void detectObstacleCollisionsAvatar() {
+        new Thread(()->{
+            for(int j=0;j<obstaclesShapes.size();j++){
+                Shape shape=new Rectangle(avatar.pos.x+avatar.direction.x-25,avatar.pos.y+avatar.direction.y-25,50,50);
+	            /*System.out.println("xdeavatar:"+(avatar.pos.x+avatar.direction.x-25));
+	            System.out.println("ydeavatar:"+(avatar.pos.y+avatar.direction.y-25));
+
+	            System.out.println("xdeobstacle"+obstaclesShapes.get(j).getScaleX());
+	            System.out.println("ydeobstacle"+obstaclesShapes.get(j).getScaleY());
+	            */
 
                 if(obstaclesShapes.get(j).intersects(shape.getBoundsInParent())){
-                    System.out.println("retorno falso");
-                    return false;
+                    System.out.println("retornofalso");
+                    canMoveAvatar=false;
+                }else{
+                    canMoveAvatar=true;
                 }
-            } // for
-        } // for
-        return true;
-    } // detect
+            }//for
+            //Sleep
+            try{
+                Thread.sleep(20);
+            }catch(InterruptedException e){
+                throw new RuntimeException(e);
+            }
+        }).start();
+    }//detect
 
     private void detectCollisions() {
         Pair<ArrayList<Shape>, ArrayList<Obstacle>> pair = avatar.detectCollision(obstaclesShapes, obstacles);
@@ -175,13 +200,13 @@ public class MapController implements Initializable {
         this.obstacles = pair2.getValue();
     }
 
-    private void detectAvatarCollisions(){
+    private void detectAvatarCollisions() {
         // mando la posición (si encuentra) del objeto avatar, para que solo evalue los demás avatares aparte de él
         // pues no quiero que por su propia bala sea eliminado. Si no encuentra, manda -1
         int avatarPos = -1;
 
         for (int i = 0; i < avatars.size(); i++) {
-            if(avatars.get(i).equals(avatar)){
+            if (avatars.get(i).equals(avatar)) {
                 avatarPos = i;
                 break;
             }
@@ -193,7 +218,7 @@ public class MapController implements Initializable {
         this.avatars = pair.getValue();
 
         for (int i = 0; i < avatars.size(); i++) {
-            if(avatars.get(i).equals(avatar2)){
+            if (avatars.get(i).equals(avatar2)) {
                 avatarPos = i;
                 break;
             }
@@ -208,32 +233,36 @@ public class MapController implements Initializable {
         // cambio el ángulo cuando muevo al tanque a derecha o izquierda
         // usando el método changeAngle del avatar o del enemigo, le sumo o le resto
         // el ángulo que yo desee, en este caso 6, para que no gire tanto
-        if (Wpressed) {
+        System.out.println("can move avatar 1 en do keyboard: " + canMoveAvatar);
+        if (canMoveAvatar) {
+            if (Wpressed) {
+                avatar.moveForward();
+            }
+            if (Apressed) {
+                avatar.changeAngle(-6);
+            }
+            if (Spressed) {
+                avatar.moveBackward();
+            }
+            if (Dpressed) {
+                avatar.changeAngle(6);
+            }
+        }
 
-            avatar.moveForward();
-        }
-        if (Apressed) {
-            avatar.changeAngle(-6);
-        }
-        if (Spressed) {
-            avatar.moveBackward();
-        }
-        if (Dpressed) {
-            avatar.changeAngle(6);
-        }
-
-        // Avatar 2
-        if (UpPressed) {
-            avatar2.moveForward();
-        }
-        if (LefPressed) {
-            avatar2.changeAngle(-6);
-        }
-        if (DownPressed) {
-            avatar2.moveBackward();
-        }
-        if (RightPressed) {
-            avatar2.changeAngle(6);
+        if (canMoveAvatar2) {
+            // Avatar 2
+            if (UpPressed) {
+                avatar2.moveForward();
+            }
+            if (LefPressed) {
+                avatar2.changeAngle(-6);
+            }
+            if (DownPressed) {
+                avatar2.moveBackward();
+            }
+            if (RightPressed) {
+                avatar2.changeAngle(6);
+            }
         }
     }
 
@@ -251,7 +280,7 @@ public class MapController implements Initializable {
             Dpressed = false;
         }
 
-        if (keyEvent.getCode() == KeyCode.SPACE){
+        if (keyEvent.getCode() == KeyCode.SPACE) {
             spacePressed = false;
         }
 
@@ -269,7 +298,7 @@ public class MapController implements Initializable {
             RightPressed = false;
         }
 
-        if (keyEvent.getCode() == KeyCode.P){
+        if (keyEvent.getCode() == KeyCode.P) {
             PPressed = false;
         }
     }
@@ -288,7 +317,7 @@ public class MapController implements Initializable {
             Dpressed = true;
         }
 
-        if(keyEvent.getCode() == KeyCode.SPACE){
+        if (keyEvent.getCode() == KeyCode.SPACE) {
             avatar.addBullet();
         }
 
@@ -306,27 +335,31 @@ public class MapController implements Initializable {
             RightPressed = true;
         }
 
-        if(keyEvent.getCode() == KeyCode.P){
+        if (keyEvent.getCode() == KeyCode.P) {
             avatar2.addBullet();
         }
     }
 
-    public void createMap(){
+    public void createMap() {
         String path = "file:" + TankBattleApplication.class.getResource("ice-block.png").getPath();
         // Pinto los obstáculos. Y es la altura de cada uno, si pongo 20 (que es la mitad de su altura)
         // entonces se me pinta arriba al borde. Para bajarlo, le a ese 20 el total de la altura
         int height = 40;
-        obstacles.add(new Obstacle(mapCanvas, path,300,20));
-        obstacles.add(new Obstacle(mapCanvas, path,300,(20+height)));
-        obstacles.add(new Obstacle(mapCanvas, path,300,(20+height*2)));
-        obstacles.add(new Obstacle(mapCanvas, path,300,(20+height*3)));
+        obstacles.add(new Obstacle(mapCanvas, path, 300, 20));
+        obstacles.add(new Obstacle(mapCanvas, path, 300, (20 + height)));
+        obstacles.add(new Obstacle(mapCanvas, path, 300, (20 + height * 2)));
+        obstacles.add(new Obstacle(mapCanvas, path, 300, (20 + height * 3)));
+        // Rectangle rectangle = new Rectangle(300-20, 20, 20,20+height*4);
 
-        obstacles.add(new Obstacle(mapCanvas, path,500,(200+height)));
-        obstacles.add(new Obstacle(mapCanvas, path,500,(280+height)));
-        obstacles.add(new Obstacle(mapCanvas, path,500,(320+height)));
 
-        obstacles.add(new Obstacle(mapCanvas, path,400,((int) mapCanvas.getHeight()-20)));
-        obstacles.add(new Obstacle(mapCanvas, path,400,((int) mapCanvas.getHeight()-60)));
-        obstacles.add(new Obstacle(mapCanvas, path,400,((int) mapCanvas.getHeight()-100)));
+        obstacles.add(new Obstacle(mapCanvas, path, 500, (200 + height)));
+        obstacles.add(new Obstacle(mapCanvas, path, 500, (280 + height)));
+        obstacles.add(new Obstacle(mapCanvas, path, 500, (320 + height)));
+        // Rectangle rectangle1 = new Rectangle(20, 20, 40,40);
+
+        obstacles.add(new Obstacle(mapCanvas, path, 400, ((int) mapCanvas.getHeight() - 20)));
+        obstacles.add(new Obstacle(mapCanvas, path, 400, ((int) mapCanvas.getHeight() - 60)));
+        obstacles.add(new Obstacle(mapCanvas, path, 400, ((int) mapCanvas.getHeight() - 100)));
+
     }
 }
