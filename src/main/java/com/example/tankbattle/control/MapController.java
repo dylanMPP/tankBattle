@@ -143,8 +143,8 @@ public class MapController implements Initializable {
 
         createMap();
 
-        avatar = new Avatar(mapCanvas, "file:" + TankBattleApplication.class.getResource("redTank.png").getPath());
-        avatar2 = new Avatar(mapCanvas, "file:" + TankBattleApplication.class.getResource("blueTank.png").getPath());
+        avatar = new Avatar(mapCanvas, "file:" + TankBattleApplication.class.getResource("blueTank.png").getPath());
+        avatar2 = new Avatar(mapCanvas, "file:" + TankBattleApplication.class.getResource("redTank.png").getPath());
         avatar3 = new Avatar(mapCanvas, "file:" + TankBattleApplication.class.getResource("yellowTank.png").getPath());
 
         avatars.add(avatar);
@@ -455,8 +455,10 @@ public class MapController implements Initializable {
                     toAvatar = true;
                 } else if( (distanceAvatar1 > distanceAvatar2) && avatar2.lives > 0 ){
                     toAvatar2 = true;
-                } else {
+                } else if(avatar.lives > 0){
                     toAvatar = true;
+                } else {
+                    toAvatar2 = true;
                 }
 
                 if(toAvatar && avatar.lives > 0){
@@ -693,6 +695,11 @@ public class MapController implements Initializable {
         obstacles.add(new Obstacle(mapCanvas, path, 100, ((int) mapCanvas.getHeight() - 210)));
         obstacles.add(new Obstacle(mapCanvas, path, 100, ((int) mapCanvas.getHeight() - 250)));
         obstacles.add(new Obstacle(mapCanvas, path, 100, ((int) mapCanvas.getHeight() - 290)));
+
+        obstacles.add(new Obstacle(mapCanvas, path, 730, 50));
+        obstacles.add(new Obstacle(mapCanvas, path, 730, 90));
+
+        obstacles.add(new Obstacle(mapCanvas, path, 800, 400));
     }
 
     public void drawLives(){

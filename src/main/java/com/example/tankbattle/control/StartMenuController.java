@@ -51,9 +51,21 @@ public class StartMenuController implements Initializable {
             } catch (LineUnavailableException e) {
                 throw new RuntimeException(e);
             }
-        }else {
-            System.out.println("No existe");
+        } else {
+            System.out.println("Doesn't exist .WAV");
         }
+
+        new Thread(() -> {
+            try {
+                Thread.sleep(60);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
+            if(startBtn.getScene().getWindow().onCloseRequestProperty().isNotNull().getValue()){
+                clip.close();
+            }
+        }).start();
     }
 
     @Override
