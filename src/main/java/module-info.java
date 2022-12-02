@@ -7,4 +7,5 @@ module com.example.tankbattle {
     exports com.example.tankbattle;
     exports com.example.tankbattle.control;
     opens com.example.tankbattle.control to javafx.fxml;
+    exports com.example.tankbattle.model;
 }

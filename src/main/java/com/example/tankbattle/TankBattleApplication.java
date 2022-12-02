@@ -11,7 +11,7 @@ import java.io.IOException;
 public class TankBattleApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(TankBattleApplication.class.getResource("map.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(TankBattleApplication.class.getResource("startMenu.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("Tank Battle");
         stage.setScene(scene);

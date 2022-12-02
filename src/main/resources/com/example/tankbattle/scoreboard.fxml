@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="800.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.tankbattle.control.ScoreboardController">
+    <children>
+        <AnchorPane layoutX="50.0" layoutY="50.0" prefHeight="700.0" prefWidth="860.0" />
+        <ImageView fitHeight="800.0" fitWidth="960.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@startBackground.png" />
+            </image>
+        </ImageView>
+        <AnchorPane layoutX="50.0" layoutY="50.0" prefHeight="700.0" prefWidth="860.0">
+            <children>
+                <ImageView fitHeight="700.0" fitWidth="860.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@background-selectplayer.png" />
+                    </image>
+                </ImageView>
+                <Label layoutX="284.0" layoutY="42.0" text="SCOREBOARD" textFill="WHITE">
+                    <font>
+                        <Font name="System Bold" size="44.0" />
+                    </font>
+                </Label>
+            <TableView fx:id="tableView" editable="false" layoutX="175.0" layoutY="132.0" prefHeight="436.0" prefWidth="530.0" AnchorPane.leftAnchor="175.0" AnchorPane.rightAnchor="175.0">
+              <columns>
+                <TableColumn fx:id="nameColumn" editable="false" prefWidth="250.0" text="NAME" />
+                <TableColumn fx:id="victoryColumn" editable="false" prefWidth="250.0" text="VICTORIES" />
+              </columns>
+            </TableView>
+            <Button onAction="#onBackToMenuBtn" layoutX="341.0" layoutY="611.0" mnemonicParsing="false" text="BACK TO MENU" textFill="#00b903">
+               <font>
+                  <Font name="System Bold" size="20.0" />
+               </font></Button>
+            </children>
+        </AnchorPane>
+    </children>
+</AnchorPane>

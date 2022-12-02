@@ -22,6 +22,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
+import javafx.stage.Stage;
 import javafx.util.Pair;
 
 public class MapController implements Initializable {
@@ -226,21 +227,24 @@ public class MapController implements Initializable {
                             detectAvatarCollisions();
                             doKeyboardActions();
 
-                            if(avatar.lives < 0 && avatar2.lives < 0 && avatar3.lives > 0){
+                            if(avatar.lives <= 0 && avatar2.lives <= 0 && avatar3.lives > 0){
                                 Singletone.getInstance().winner = "CPU";
                                 isRunning = false;
-                            } else if(avatar.lives < 0 && avatar2.lives > 0 && avatar3.lives < 0){
-                                Singletone.getInstance().winner = "player2";
+                            } else if(avatar.lives <= 0 && avatar2.lives > 0 && avatar3.lives <= 0){
+                                Singletone.getInstance().winner = Singletone.getInstance().playerTwo;
                                 isRunning = false;
-                            } else if(avatar.lives > 0 && avatar2.lives < 0 && avatar3.lives < 0){
-                                Singletone.getInstance().winner = "player1";
+                            } else if(avatar.lives > 0 && avatar2.lives <= 0 && avatar3.lives <= 0){
+                                Singletone.getInstance().winner = Singletone.getInstance().playerOne;
                                 isRunning = false;
                             }
 
                             if(!isRunning){
-                                TankBattleApplication.showWindow("");
+                                TankBattleApplication.showWindow("winner.fxml");
+                                Stage stage = (Stage) background.getScene().getWindow();
+                                stage.close();
                             }
                         });
+
                         //Sleep
                         try {
                             Thread.sleep(20);
