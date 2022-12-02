@@ -520,9 +520,11 @@ public class MapController implements Initializable {
                         throw new RuntimeException(e);
                     }
 
-                    Platform.runLater(() -> {
-                        avatar3.addBullet(bulletImage);
-                    });
+                    if(avatar3.lives > 0){
+                        Platform.runLater(() -> {
+                            avatar3.addBullet(bulletImage);
+                        });
+                    }
 
                     if(avatar3.ammo<=0){
                         avatar3.reload();

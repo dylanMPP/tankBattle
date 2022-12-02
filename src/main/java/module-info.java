@@ -1,6 +1,7 @@
 module com.example.tankbattle {
     requires javafx.controls;
     requires javafx.fxml;
+    requires java.desktop;
 
 
     opens com.example.tankbattle to javafx.fxml;

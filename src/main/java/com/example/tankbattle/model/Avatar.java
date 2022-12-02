@@ -38,11 +38,11 @@ public class Avatar {
         tank = new Image(path);
 
         if(pathImage.contains("red")) {
-            pos = new Vector(50, 50);
+            pos = new Vector(70, 100);
         } else if(pathImage.contains("blue")){
             pos = new Vector(600, ((int) canvas.getHeight() - 100));
         } else if(pathImage.contains("yellow")){
-            pos = new Vector(600, 100);
+            pos = new Vector(800, 100);
         }
 
         // la pos del canvas debe ser pequeña para que no gire rápido
