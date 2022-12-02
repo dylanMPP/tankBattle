@@ -5,6 +5,7 @@ public class Singletone {
 
     public String playerOne;
     public String playerTwo;
+    public String winner;
 
     public static Singletone getInstance(){
         if(singletone==null){

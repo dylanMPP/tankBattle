@@ -224,8 +224,22 @@ public class MapController implements Initializable {
                             detectCollisions();
                             // Colisión de avatares con balas
                             detectAvatarCollisions();
-
                             doKeyboardActions();
+
+                            if(avatar.lives < 0 && avatar2.lives < 0 && avatar3.lives > 0){
+                                Singletone.getInstance().winner = "CPU";
+                                isRunning = false;
+                            } else if(avatar.lives < 0 && avatar2.lives > 0 && avatar3.lives < 0){
+                                Singletone.getInstance().winner = "player2";
+                                isRunning = false;
+                            } else if(avatar.lives > 0 && avatar2.lives < 0 && avatar3.lives < 0){
+                                Singletone.getInstance().winner = "player1";
+                                isRunning = false;
+                            }
+
+                            if(!isRunning){
+                                TankBattleApplication.showWindow("");
+                            }
                         });
                         //Sleep
                         try {
@@ -433,15 +447,15 @@ public class MapController implements Initializable {
                 boolean toAvatar = false;
                 boolean toAvatar2 = false;
 
-                if(distanceAvatar1 < distanceAvatar2){
+                if( (distanceAvatar1 < distanceAvatar2) && avatar.lives > 0){
                     toAvatar = true;
-                } else if(distanceAvatar1 > distanceAvatar2){
+                } else if( (distanceAvatar1 > distanceAvatar2) && avatar2.lives > 0 ){
                     toAvatar2 = true;
                 } else {
                     toAvatar = true;
                 }
 
-                if(toAvatar){
+                if(toAvatar && avatar.lives > 0){
                     // Si la distancia es muy corta, no hago que se mueva, sino que simplemente setee su dirección
                     // mirando al avatar a seguir y me dispare cada cierto tiempo.
                     if(distanceAvatar1 <= 120){
@@ -461,7 +475,7 @@ public class MapController implements Initializable {
                         }
                     }
 
-                } else if(toAvatar2){
+                } else if(toAvatar2 && avatar2.lives > 0){
                     //avatar3.direction.x = avatar2.direction.x - avatar3.direction.x;
                     //avatar3.direction.y = avatar2.direction.y - avatar3.direction.y;
                     if(distanceAvatar2 <= 120){
@@ -495,7 +509,7 @@ public class MapController implements Initializable {
     public void avatar3AddBullet(){
         new Thread(() -> {
             while (isRunning){
-                if(!(avatar3.lives > 0)){
+                if((avatar3.lives > 0)){
                     try{
                         Thread.sleep(3000);
                     }catch(InterruptedException e){
@@ -505,6 +519,10 @@ public class MapController implements Initializable {
                     Platform.runLater(() -> {
                         avatar3.addBullet(bulletImage);
                     });
+
+                    if(avatar3.ammo<=0){
+                        avatar3.reload();
+                    }
                 }
             }
         }).start();
@@ -666,13 +684,15 @@ public class MapController implements Initializable {
         obstacles.add(new Obstacle(mapCanvas, path, 400, ((int) mapCanvas.getHeight() - 60)));
         obstacles.add(new Obstacle(mapCanvas, path, 400, ((int) mapCanvas.getHeight() - 100)));
 
-        obstacles.add(new Obstacle(mapCanvas, path, 400, ((int) mapCanvas.getHeight() - 100)));
+        obstacles.add(new Obstacle(mapCanvas, path, 100, ((int) mapCanvas.getHeight() - 210)));
+        obstacles.add(new Obstacle(mapCanvas, path, 100, ((int) mapCanvas.getHeight() - 250)));
+        obstacles.add(new Obstacle(mapCanvas, path, 100, ((int) mapCanvas.getHeight() - 290)));
     }
 
     public void drawLives(){
         new Thread(() -> {
             while(isRunning){
-                    if(avatar.lives ==5){
+                    if(avatar.lives == 5){
                         playerOneLivesImageView.setImage(fiveHeartsImage);
                     } else if(avatar.lives ==4){
                         playerOneLivesImageView.setImage(fourHeartsImage);

@@ -11,38 +11,43 @@
       <AnchorPane prefHeight="200.0" prefWidth="200.0" />
       <Canvas fx:id="mapCanvas" height="540.0" layoutY="130.0" width="960.0" />
       <ImageView fx:id="background" fitHeight="540.0" fitWidth="960.0" layoutY="130.0" pickOnBounds="true" preserveRatio="true" />
-      <AnchorPane layoutY="670.0" prefHeight="130.0" prefWidth="480.0">
+      <AnchorPane layoutY="670.0" prefHeight="130.0" prefWidth="320.0">
          <children>
-            <Label fx:id="playerOneLbl" layoutX="190.0" layoutY="5.0" text="PLAYER ONE">
+            <Label fx:id="playerOneLbl" layoutX="110.0" layoutY="5.0" text="PLAYER ONE">
                <font>
                   <Font name="System Bold" size="18.0" />
                </font>
             </Label>
-            <ImageView fx:id="playerOneLivesImageView" fitHeight="40.0" fitWidth="200.0" layoutX="140.0" layoutY="32.0" pickOnBounds="true" preserveRatio="true" />
-            <ImageView fx:id="playerOneBulletsImageView" fitHeight="40.0" fitWidth="120.0" layoutX="185.0" layoutY="75.0" pickOnBounds="true" preserveRatio="true" />
+            <ImageView fx:id="playerOneLivesImageView" fitHeight="40.0" fitWidth="200.0" layoutX="60.0" layoutY="32.0" pickOnBounds="true" preserveRatio="true" />
+            <ImageView fx:id="playerOneBulletsImageView" fitHeight="40.0" fitWidth="120.0" layoutX="100.0" layoutY="75.0" pickOnBounds="true" preserveRatio="true" />
          </children></AnchorPane>
-      <AnchorPane layoutX="480.0" prefHeight="130.0" prefWidth="480.0">
+      <AnchorPane layoutX="320.0" layoutY="670.0" prefHeight="130.0" prefWidth="320.0">
          <children>
-            <AnchorPane prefHeight="130.0" prefWidth="480.0">
+            <AnchorPane prefHeight="130.0" prefWidth="320.0">
                <children>
-                  <Label layoutX="222.0" layoutY="5.0" text="CPU">
+                  <Label layoutX="140.0" layoutY="5.0" text="CPU">
                      <font>
                         <Font name="System Bold" size="18.0" />
                      </font>
                   </Label>
-                  <ImageView fx:id="playerThreeLivesImageView" fitHeight="40.0" fitWidth="200.0" layoutX="140.0" layoutY="32.0" pickOnBounds="true" preserveRatio="true" />
-                  <ImageView fx:id="playerThreeBulletsImageView" fitHeight="40.0" fitWidth="120.0" layoutX="185.0" layoutY="75.0" pickOnBounds="true" preserveRatio="true" />
+                  <ImageView fx:id="playerThreeLivesImageView" fitHeight="40.0" fitWidth="200.0" layoutX="60.0" layoutY="32.0" pickOnBounds="true" preserveRatio="true" />
+                  <ImageView fx:id="playerThreeBulletsImageView" fitHeight="40.0" fitWidth="120.0" layoutX="100.0" layoutY="75.0" pickOnBounds="true" preserveRatio="true" />
                </children></AnchorPane>
          </children></AnchorPane>
-      <AnchorPane layoutX="480.0" layoutY="670.0" prefHeight="130.0" prefWidth="480.0">
+      <AnchorPane layoutX="640.0" layoutY="670.0" prefHeight="130.0" prefWidth="320.0">
          <children>
-            <Label fx:id="playerTwoLbl" layoutX="190.0" layoutY="5.0" text="PLAYER TWO">
+            <Label fx:id="playerTwoLbl" layoutX="110.0" layoutY="5.0" text="PLAYER TWO">
                <font>
                   <Font name="System Bold" size="18.0" />
                </font>
             </Label>
-            <ImageView fx:id="playerTwoLivesImageView" fitHeight="40.0" fitWidth="200.0" layoutX="140.0" layoutY="32.0" pickOnBounds="true" preserveRatio="true" />
-            <ImageView fx:id="playerTwoBulletsImageView" fitHeight="40.0" fitWidth="120.0" layoutX="185.0" layoutY="75.0" pickOnBounds="true" preserveRatio="true" />
+            <ImageView fx:id="playerTwoLivesImageView" fitHeight="40.0" fitWidth="200.0" layoutX="60.0" layoutY="32.0" pickOnBounds="true" preserveRatio="true" />
+            <ImageView fx:id="playerTwoBulletsImageView" fitHeight="40.0" fitWidth="120.0" layoutX="100.0" layoutY="75.0" pickOnBounds="true" preserveRatio="true" />
          </children></AnchorPane>
+      <Label layoutX="370.0" layoutY="33.0" text="NEW GAME">
+         <font>
+            <Font name="System Bold" size="40.0" />
+         </font>
+      </Label>
    </children>
 </AnchorPane>
