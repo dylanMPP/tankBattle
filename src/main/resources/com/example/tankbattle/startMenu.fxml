@@ -11,11 +11,6 @@
             <Image url="@startBackground.png" />
          </image>
       </ImageView>
-      <Button fx:id="startBtn" layoutX="375.0" layoutY="600.0" mnemonicParsing="false" onAction="#onStartBtnClick" prefHeight="80.0" prefWidth="209.0" visible="false" />
-      <ImageView fitHeight="80.0" fitWidth="209.0" layoutX="375.0" layoutY="600.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@startBtnImage.png" />
-         </image>
-      </ImageView>
+      <Button fx:id="startBtn" layoutX="375.0" layoutY="600.0" mnemonicParsing="false" onAction="#onStartBtnClick" prefHeight="80.0" prefWidth="209.0" />
    </children>
 </AnchorPane>

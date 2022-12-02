@@ -42,7 +42,7 @@ public class Avatar {
         } else if(pathImage.contains("blue")){
             pos = new Vector(600, ((int) canvas.getHeight() - 100));
         } else if(pathImage.contains("yellow")){
-            pos = new Vector(60, 100);
+            pos = new Vector(600, 100);
         }
 
         // la pos del canvas debe ser pequeña para que no gire rápido
